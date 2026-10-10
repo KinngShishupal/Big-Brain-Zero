@@ -23,6 +23,20 @@ npx react-native run-android  # second terminal, device or emulator connected
 
 Checks: `npx tsc --noEmit`, `npm run lint`, `npm test`.
 
+## Release builds
+
+| Command | Output | Use it for |
+|---|---|---|
+| `npm run keystore` | `android/upload-keystore.jks` + `android/keystore.properties` | Once, before your first Play upload |
+| `npm run build:aab` | `dist/CallMeDumb-<version>-<code>.aab` | Uploading to Google Play |
+| `npm run build:apk` | `dist/CallMeDumb-<version>-<code>.apk` | Installing directly on a phone |
+| `npm run build:release` | Both of the above | |
+
+- `npm run keystore` asks for your name, country and a password, then creates the upload key. **Back up both files** (password manager or cloud drive). If you lose them, you can't ship updates until Google resets your upload key. Both are git-ignored.
+- Without `keystore.properties`, release builds fall back to the debug key and print a warning. That's fine for testing, but Play rejects it.
+- Before every new Play upload, increase `versionCode` (and usually `versionName`) in `android/app/build.gradle`.
+- Release builds always use your real AdMob ad units; debug builds always show test ads. Never tap your own live ads.
+
 ## Project layout
 
 ```

@@ -10,9 +10,9 @@ import { TestIds } from 'react-native-google-mobile-ads';
  */
 const PRODUCTION = {
   android: {
-    rewarded: '',
-    interstitial: '',
-    banner: '',
+    rewarded: 'ca-app-pub-8284285672679424/3217821088',
+    interstitial: 'ca-app-pub-8284285672679424/5182562886',
+    banner: 'ca-app-pub-8284285672679424/1187477554',
   },
   ios: {
     rewarded: '',

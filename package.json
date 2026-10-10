@@ -7,7 +7,11 @@
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
-    "test": "jest"
+    "test": "jest",
+    "keystore": "node scripts/create-keystore.mjs",
+    "build:apk": "node scripts/build-release.mjs apk",
+    "build:aab": "node scripts/build-release.mjs aab",
+    "build:release": "node scripts/build-release.mjs apk aab"
   },
   "dependencies": {
     "@react-navigation/native": "7.5.0",

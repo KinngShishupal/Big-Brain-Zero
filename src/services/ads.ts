@@ -123,7 +123,8 @@ export function initAds(): void {
   AdsConsent.gatherConsent()
     .then(startSdkIfAllowed)
     .catch(error => {
-      console.warn('[ads] consent gathering failed', error);
+      // Usually means no consent message is set up in AdMob yet (Privacy & messaging).
+      console.log('[ads] consent gathering failed', error);
       startSdkIfAllowed().catch(() => {});
     });
   startSdkIfAllowed().catch(() => {});

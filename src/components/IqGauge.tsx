@@ -47,10 +47,12 @@ interface Props {
   iq: number;
   /** How long the needle takes to sweep from 160 down to `iq`. */
   sweepMs: number;
-  readout: number;
+  readout: number | string;
+  /** Shrinks or enlarges the whole gauge (1 = 300dp wide). */
+  scale?: number;
 }
 
-function IqGaugeImpl({ iq, sweepMs, readout }: Props) {
+function IqGaugeImpl({ iq, sweepMs, readout, scale = 1 }: Props) {
   const angle = useSharedValue(iqToAngle(IQ_MAX));
   const tremble = useSharedValue(0);
 
@@ -99,62 +101,78 @@ function IqGaugeImpl({ iq, sweepMs, readout }: Props) {
   );
 
   return (
-    <View style={styles.box} accessibilityLabel={`IQ ${readout}`}>
-      {/* Everything is positioned relative to this zero-size pivot. */}
-      <View style={styles.pivot}>
-        <View style={styles.backGlow} />
+    <View
+      style={{ width: SIZE * scale, height: BOX_H * scale }}
+      accessibilityLabel={`IQ ${readout}`}
+    >
+      <View
+        style={[
+          styles.box,
+          {
+            left: (SIZE * scale - SIZE) / 2,
+            top: (BOX_H * scale - BOX_H) / 2,
+            transform: [{ scale }],
+          },
+        ]}
+      >
+        {/* Everything is positioned relative to this zero-size pivot. */}
+        <View style={styles.pivot}>
+          <View style={styles.backGlow} />
 
-        {segments.map((s, i) => (
-          <View
-            key={`s${i}`}
-            style={[
-              styles.segment,
-              {
-                backgroundColor: s.color,
-                boxShadow: `0px 0px 10px ${s.color}`,
-              },
-              polar(s.a, RADIUS),
-            ]}
-          />
-        ))}
+          {segments.map((s, i) => (
+            <View
+              key={`s${i}`}
+              style={[
+                styles.segment,
+                {
+                  backgroundColor: s.color,
+                  boxShadow: `0px 0px 10px ${s.color}`,
+                },
+                polar(s.a, RADIUS),
+              ]}
+            />
+          ))}
 
-        {ticks.map((tk, i) => (
-          <View
-            key={`t${i}`}
-            style={[
-              tk.major ? styles.tickMajor : styles.tickMinor,
-              polar(tk.a, RADIUS - (tk.major ? 20 : 17)),
-            ]}
-          />
-        ))}
+          {ticks.map((tk, i) => (
+            <View
+              key={`t${i}`}
+              style={[
+                tk.major ? styles.tickMajor : styles.tickMinor,
+                polar(tk.a, RADIUS - (tk.major ? 20 : 17)),
+              ]}
+            />
+          ))}
 
-        {LABELS.map(v => (
-          <Text
-            key={`l${v}`}
-            style={[styles.label, polar(iqToAngle(v), RADIUS - 40, true)]}
-          >
-            {v}
+          {LABELS.map(v => (
+            <Text
+              key={`l${v}`}
+              style={[styles.label, polar(iqToAngle(v), RADIUS - 40, true)]}
+            >
+              {v}
+            </Text>
+          ))}
+
+          <Text style={[styles.endEmoji, polar(-100, RADIUS + 22, true)]}>
+            🥔
           </Text>
-        ))}
+          <Text style={[styles.endEmoji, polar(100, RADIUS + 22, true)]}>
+            🤓
+          </Text>
 
-        <Text style={[styles.endEmoji, polar(-100, RADIUS + 22, true)]}>
-          🥔
-        </Text>
-        <Text style={[styles.endEmoji, polar(100, RADIUS + 22, true)]}>🤓</Text>
+          <Animated.View style={[styles.needleArm, needleStyle]}>
+            <View style={styles.needle} />
+            <View style={styles.needleTip} />
+          </Animated.View>
 
-        <Animated.View style={[styles.needleArm, needleStyle]}>
-          <View style={styles.needle} />
-          <View style={styles.needleTip} />
-        </Animated.View>
-
-        <View style={styles.hubOuter}>
-          <View style={styles.hubInner} />
+          <View style={styles.hubOuter}>
+            <View style={styles.hubInner} />
+          </View>
         </View>
-      </View>
 
-      <View style={styles.readout}>
-        <Text style={styles.readoutLabel}>IQ</Text>
-        <Text style={styles.readoutValue}>{readout}</Text>
+        <View style={styles.readout}>
+          <Text style={styles.readoutLabel}>IQ</Text>
+          <Text style={styles.readoutValue}>{readout}</Text>
+        </View>
       </View>
     </View>
   );
@@ -162,13 +180,15 @@ function IqGaugeImpl({ iq, sweepMs, readout }: Props) {
 
 export const IqGauge = memo(IqGaugeImpl);
 
+const BOX_H = RADIUS + 96;
 const SEG_W = 7;
 const SEG_H = 16;
 
 const styles = StyleSheet.create({
   box: {
+    position: 'absolute',
     width: SIZE,
-    height: RADIUS + 96,
+    height: BOX_H,
     alignItems: 'center',
   },
   pivot: {

@@ -17,6 +17,8 @@ import { Backdrop } from '../components/Backdrop';
 import { Button } from '../components/Button';
 import { GlassCard } from '../components/GlassCard';
 import { HowToPlayModal } from '../components/HowToPlayModal';
+import { IqGauge } from '../components/IqGauge';
+import { IQ_MAX } from '../engine/stupid';
 import { useT } from '../i18n';
 import { haptic } from '../services/haptics';
 import { useSaveStore } from '../store/saveStore';
@@ -125,7 +127,12 @@ export function HomeScreen({ navigation }: Props) {
           >
             <GlassCard style={styles.statCard}>
               <Text style={styles.statLabel}>{t('home.bestLabel')}</Text>
-              <Text style={styles.statValue}>{bestIq ?? '—'}</Text>
+              <IqGauge
+                iq={bestIq ?? IQ_MAX}
+                sweepMs={1200}
+                readout={bestIq ?? '—'}
+                scale={0.72}
+              />
               <Text style={styles.statHint}>
                 {bestIq === null ? t('home.noBest') : t('home.lowerIsBetter')}
               </Text>
@@ -247,17 +254,10 @@ const styles = StyleSheet.create({
     letterSpacing: 2,
     textTransform: 'uppercase',
   },
-  statValue: {
-    color: colors.text,
-    fontSize: 48,
-    fontWeight: '900',
-    textShadowColor: 'rgba(46, 230, 255, 0.6)',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 18,
-  },
   statHint: {
     color: colors.textFaint,
     fontSize: 13,
     fontWeight: '700',
+    marginTop: spacing.sm,
   },
 });
