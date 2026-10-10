@@ -1,5 +1,5 @@
 /**
- * Pure rules for Big Brain Zero: every challenge rewards the dumbest possible play.
+ * Pure rules for Call Me Dumb: every challenge rewards the dumbest possible play.
  * Each challenge scores 0–100 "stupidity points". No React here — all unit-tested.
  */
 import { QUESTIONS, type Answer, type Question } from '../data/questions';

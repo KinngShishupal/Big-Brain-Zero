@@ -13,7 +13,7 @@ class MainActivity : ReactActivity() {
    * Returns the name of the main component registered from JavaScript. This is used to schedule
    * rendering of the component.
    */
-  override fun getMainComponentName(): String = "FarmToEmpire"
+  override fun getMainComponentName(): String = "CallMeDumb"
 
   // react-native-screens: avoid crashes when Android restores the activity after process death.
   override fun onCreate(savedInstanceState: Bundle?) {

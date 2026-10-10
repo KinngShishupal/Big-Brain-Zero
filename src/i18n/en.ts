@@ -1,11 +1,13 @@
 export const en = {
-  'app.title': 'Big Brain Zero',
+  'app.title': 'Call Me Dumb',
   'app.tagline': 'The dumber you are, the more you win.',
 
   'home.play': 'Play dumb',
   'home.best': 'Lowest IQ: {iq}',
   'home.noBest': 'No IQ yet. Suspicious.',
   'home.played': 'Games played: {count}',
+  'home.bestLabel': 'Lowest IQ',
+  'home.lowerIsBetter': 'Lower is better. Obviously.',
   'home.rules':
     'Wrong answers score. Absurd answers score more. Slow is good. Pressing forbidden buttons is great. Lowest IQ wins.',
 
@@ -17,6 +19,7 @@ export const en = {
   'button.label': 'DO NOT PRESS',
   'button.prompt': 'Whatever you do, do NOT press the button.',
   'button.presses': 'Presses: {count}',
+  'button.pressesLabel': 'presses',
   'button.time': '{seconds}s left',
 
   'reaction.prompt': 'Tap when it turns green. Or don’t. Take your time.',

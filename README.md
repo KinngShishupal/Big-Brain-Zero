@@ -1,4 +1,4 @@
-# Big Brain Zero
+# Call Me Dumb
 
 **The dumber you are, the more you win.** A silly party game for Android, built with **React Native CLI (bare workflow, no Expo)** and TypeScript.
 

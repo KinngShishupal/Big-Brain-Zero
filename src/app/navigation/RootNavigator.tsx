@@ -1,6 +1,5 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useT } from '../../i18n';
 import { HomeScreen } from '../../screens/HomeScreen';
 import { PlayScreen } from '../../screens/PlayScreen';
 import { ResultScreen } from '../../screens/ResultScreen';
@@ -11,13 +10,12 @@ import type { RootStackParamList } from './types';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export function RootNavigator() {
-  const t = useT();
   return (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
         contentStyle: { backgroundColor: colors.background },
-        animation: 'slide_from_right',
+        animation: 'fade',
       }}
     >
       <Stack.Screen name="Home" component={HomeScreen} />
@@ -34,13 +32,7 @@ export function RootNavigator() {
       <Stack.Screen
         name="Settings"
         component={SettingsScreen}
-        options={{
-          headerShown: true,
-          title: t('settings.title'),
-          headerStyle: { backgroundColor: colors.surfaceAlt },
-          headerTintColor: colors.text,
-          headerTitleStyle: { fontWeight: '900' },
-        }}
+        options={{ animation: 'slide_from_right' }}
       />
     </Stack.Navigator>
   );

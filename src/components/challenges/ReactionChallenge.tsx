@@ -1,8 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
 import { REACTION_TIMEOUT_MS, scoreReaction } from '../../engine/stupid';
 import { useT } from '../../i18n';
-import { colors, radius, spacing } from '../../theme';
+import { colors, glow, gradients, radius, spacing } from '../../theme';
 
 interface Props {
   waitMs: number;
@@ -16,6 +24,7 @@ export function ReactionChallenge({ waitMs, onDone }: Props) {
   const done = useRef(false);
   const onDoneRef = useRef(onDone);
   onDoneRef.current = onDone;
+  const pulse = useSharedValue(0);
 
   const finish = (points: number) => {
     if (!done.current) {
@@ -25,6 +34,13 @@ export function ReactionChallenge({ waitMs, onDone }: Props) {
   };
 
   useEffect(() => {
+    pulse.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 700, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0, { duration: 700, easing: Easing.inOut(Easing.sin) }),
+      ),
+      -1,
+    );
     const goTimer = setTimeout(() => {
       goAt.current = Date.now();
       setGreen(true);
@@ -42,7 +58,7 @@ export function ReactionChallenge({ waitMs, onDone }: Props) {
       clearTimeout(goTimer);
       clearTimeout(giveUp);
     };
-  }, [waitMs]);
+  }, [waitMs, pulse]);
 
   const tap = () => {
     if (goAt.current === null) {
@@ -54,6 +70,10 @@ export function ReactionChallenge({ waitMs, onDone }: Props) {
     }
   };
 
+  const emojiStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: 1 + pulse.value * 0.12 }],
+  }));
+
   return (
     <View style={styles.wrap}>
       <Text style={styles.prompt}>{t('reaction.prompt')}</Text>
@@ -61,10 +81,18 @@ export function ReactionChallenge({ waitMs, onDone }: Props) {
         onPress={tap}
         accessibilityRole="button"
         accessibilityLabel={green ? t('reaction.go') : t('reaction.wait')}
-        style={[styles.pad, green ? styles.go : styles.wait]}
+        style={[
+          styles.pad,
+          green
+            ? { backgroundImage: gradients.lime, boxShadow: glow.lime }
+            : { backgroundImage: gradients.red, boxShadow: glow.red },
+        ]}
       >
-        <Text style={styles.emoji}>{green ? '🐢' : '✋'}</Text>
-        <Text style={styles.label}>
+        <View style={styles.shine} />
+        <Animated.Text style={[styles.emoji, emojiStyle]}>
+          {green ? '🐢' : '✋'}
+        </Animated.Text>
+        <Text style={[styles.label, green && styles.labelDark]}>
           {green ? t('reaction.go') : t('reaction.wait')}
         </Text>
       </Pressable>
@@ -85,30 +113,31 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   pad: {
-    height: 320,
+    height: 360,
     borderRadius: radius.lg,
-    borderWidth: 4,
-    borderColor: colors.border,
-    borderBottomWidth: 10,
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.md,
+    overflow: 'hidden',
   },
-  wait: {
-    backgroundColor: colors.danger,
-  },
-  go: {
-    backgroundColor: colors.lime,
+  shine: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '45%',
+    backgroundImage:
+      'linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 100%)',
   },
   emoji: {
-    fontSize: 80,
+    fontSize: 96,
   },
   label: {
-    color: colors.white,
+    color: colors.text,
     fontSize: 26,
     fontWeight: '900',
-    textShadowColor: colors.border,
-    textShadowOffset: { width: 1, height: 2 },
-    textShadowRadius: 0,
+  },
+  labelDark: {
+    color: '#120A2E',
   },
 });

@@ -1,18 +1,23 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Modal, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Animated, {
+  FadeIn,
+  SlideInDown,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { RootStackParamList } from '../app/navigation/types';
-import { Button } from '../components/Button';
+import { Backdrop } from '../components/Backdrop';
+import { Button, type ButtonVariant } from '../components/Button';
 import { ButtonChallenge } from '../components/challenges/ButtonChallenge';
 import { CountChallenge } from '../components/challenges/CountChallenge';
 import { QuizChallenge } from '../components/challenges/QuizChallenge';
 import { ReactionChallenge } from '../components/challenges/ReactionChallenge';
+import { Confetti } from '../components/Confetti';
 import {
   buildRun,
   makeRng,
@@ -23,15 +28,38 @@ import {
 } from '../engine/stupid';
 import { useT } from '../i18n';
 import { haptic } from '../services/haptics';
-import { colors, radius, spacing } from '../theme';
+import { colors, glow, gradients, radius, spacing, TOUCH_MIN } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Play'>;
 
-const VERDICT_EMOJI: Record<Verdict, string> = {
-  smart: '🤓',
-  meh: '😐',
-  dumb: '🤪',
-  peak: '🥔',
+const VERDICT_STYLE: Record<
+  Verdict,
+  { emoji: string; glow: string; textGlow: string; button: ButtonVariant }
+> = {
+  smart: {
+    emoji: '🤓',
+    glow: glow.red,
+    textGlow: 'rgba(255,61,110,0.85)',
+    button: 'violet',
+  },
+  meh: {
+    emoji: '😐',
+    glow: glow.violet,
+    textGlow: 'rgba(139,92,255,0.85)',
+    button: 'violet',
+  },
+  dumb: {
+    emoji: '🤪',
+    glow: glow.cyan,
+    textGlow: 'rgba(46,230,255,0.85)',
+    button: 'cyan',
+  },
+  peak: {
+    emoji: '🥔',
+    glow: glow.gold,
+    textGlow: 'rgba(255,216,77,0.9)',
+    button: 'gold',
+  },
 };
 
 function renderChallenge(c: Challenge, onDone: (points: number) => void) {
@@ -57,29 +85,36 @@ export function PlayScreen({ navigation }: Props) {
   const [total, setTotal] = useState(0);
   const [lastPoints, setLastPoints] = useState<number | null>(null);
 
-  const pop = useSharedValue(0.5);
+  const progress = useSharedValue(0);
   useEffect(() => {
-    if (lastPoints !== null) {
-      pop.value = 0.5;
-      pop.value = withSpring(1, { damping: 8, stiffness: 180 });
-    }
-  }, [lastPoints, pop]);
-  const popStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: pop.value }],
+    progress.value = withTiming(index / run.length, { duration: 450 });
+  }, [index, run.length, progress]);
+  const progressStyle = useAnimatedStyle(() => ({
+    width: `${progress.value * 100}%`,
+  }));
+
+  const scoreBump = useSharedValue(1);
+  const scoreStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scoreBump.value }],
   }));
 
   // Guards against double taps: each challenge scores once, and Next advances once.
   const answered = useRef(false);
 
-  const onDone = useCallback((points: number) => {
-    if (answered.current) {
-      return;
-    }
-    answered.current = true;
-    haptic(points >= 50 ? 'success' : 'error');
-    setTotal(prev => prev + points);
-    setLastPoints(points);
-  }, []);
+  const onDone = useCallback(
+    (points: number) => {
+      if (answered.current) {
+        return;
+      }
+      answered.current = true;
+      haptic(points >= 50 ? 'success' : 'error');
+      setTotal(prev => prev + points);
+      setLastPoints(points);
+      scoreBump.value = 1.4;
+      scoreBump.value = withSpring(1, { damping: 6, stiffness: 200 });
+    },
+    [scoreBump],
+  );
 
   const next = () => {
     if (!answered.current) {
@@ -95,52 +130,84 @@ export function PlayScreen({ navigation }: Props) {
   };
 
   const verdict = lastPoints === null ? null : verdictFor(lastPoints);
+  const vs = verdict ? VERDICT_STYLE[verdict] : null;
 
   return (
-    <View
-      style={[
-        styles.screen,
-        {
-          paddingTop: insets.top + spacing.md,
-          paddingBottom: insets.bottom + spacing.lg,
-        },
-      ]}
-    >
-      <View style={styles.header}>
-        <Text style={styles.progress}>
-          {t('play.progress', { n: index + 1, total: run.length })}
-        </Text>
-        <Text style={styles.score}>🧠 {total}</Text>
-      </View>
-      <View style={styles.bar}>
-        <View
-          style={[styles.barFill, { width: `${(index / run.length) * 100}%` }]}
-        />
-      </View>
+    <Backdrop>
+      <View
+        style={[
+          styles.screen,
+          {
+            paddingTop: insets.top + spacing.sm,
+            paddingBottom: insets.bottom + spacing.lg,
+          },
+        ]}
+      >
+        <View style={styles.header}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Quit"
+            hitSlop={8}
+            onPress={() => navigation.goBack()}
+            style={styles.close}
+          >
+            <Text style={styles.closeText}>✕</Text>
+          </Pressable>
+          <View style={styles.headerMid}>
+            <Text style={styles.progressText}>
+              {t('play.progress', { n: index + 1, total: run.length })}
+            </Text>
+            <View style={styles.track}>
+              <Animated.View style={[styles.fill, progressStyle]} />
+            </View>
+          </View>
+          <Animated.View style={[styles.scorePill, scoreStyle]}>
+            <Text style={styles.scoreText}>🧠 {total}</Text>
+          </Animated.View>
+        </View>
 
-      {/* Keyed by index so each challenge starts with fresh state and timers. */}
-      <View key={index} style={styles.body}>
-        {renderChallenge(run[index], onDone)}
+        {/* Keyed by index so each challenge starts with fresh state and timers. */}
+        <Animated.View
+          key={index}
+          entering={FadeIn.duration(250)}
+          style={styles.body}
+        >
+          {renderChallenge(run[index], onDone)}
+        </Animated.View>
       </View>
 
       <Modal
         visible={verdict !== null}
         transparent
         animationType="fade"
+        statusBarTranslucent
         onRequestClose={next}
       >
         <View style={styles.backdrop}>
-          {verdict && (
-            <Animated.View style={[styles.card, popStyle]}>
-              <Text style={styles.verdictEmoji}>{VERDICT_EMOJI[verdict]}</Text>
-              <Text style={styles.points}>+{lastPoints}</Text>
+          {verdict === 'peak' && <Confetti />}
+          {verdict === 'dumb' && <Confetti count={18} />}
+          {vs && (
+            <Animated.View
+              entering={SlideInDown.springify().damping(16)}
+              style={[
+                styles.sheet,
+                { paddingBottom: insets.bottom + spacing.xl },
+              ]}
+            >
+              <View style={[styles.emojiBubble, { boxShadow: vs.glow }]}>
+                <Text style={styles.verdictEmoji}>{vs.emoji}</Text>
+              </View>
+              <Text style={[styles.points, { textShadowColor: vs.textGlow }]}>
+                +{lastPoints}
+              </Text>
               <Text style={styles.pointsLabel}>
                 {t('play.points', { points: lastPoints ?? 0 })}
               </Text>
-              <Text style={styles.verdict}>{t(`verdict.${verdict}`)}</Text>
+              <Text style={styles.verdict}>{t(`verdict.${verdict!}`)}</Text>
               <Button
                 label={t('verdict.continue')}
-                variant="lime"
+                icon="👉"
+                variant={vs.button}
                 onPress={next}
                 style={styles.full}
               />
@@ -148,43 +215,69 @@ export function PlayScreen({ navigation }: Props) {
           )}
         </View>
       </Modal>
-    </View>
+    </Backdrop>
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: colors.background,
     paddingHorizontal: spacing.lg,
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    gap: spacing.md,
   },
-  progress: {
-    color: colors.text,
+  close: {
+    width: TOUCH_MIN - 6,
+    height: TOUCH_MIN - 6,
+    borderRadius: radius.pill,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.glass,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  closeText: {
+    color: colors.textMuted,
     fontSize: 16,
     fontWeight: '900',
   },
-  score: {
-    color: colors.primaryDark,
-    fontSize: 20,
-    fontWeight: '900',
+  headerMid: {
+    flex: 1,
+    gap: 6,
   },
-  bar: {
-    height: 14,
-    marginTop: spacing.sm,
+  progressText: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontWeight: '900',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+  },
+  track: {
+    height: 10,
     borderRadius: radius.pill,
-    borderWidth: 3,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.glass,
     overflow: 'hidden',
   },
-  barFill: {
+  fill: {
     height: '100%',
-    backgroundColor: colors.primary,
+    borderRadius: radius.pill,
+    backgroundImage: gradients.progress,
+    boxShadow: glow.violet,
+  },
+  scorePill: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: 8,
+    borderRadius: radius.pill,
+    backgroundImage: gradients.pink,
+    boxShadow: glow.pink,
+  },
+  scoreText: {
+    color: colors.text,
+    fontSize: 16,
+    fontWeight: '900',
   },
   body: {
     flex: 1,
@@ -193,43 +286,55 @@ const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
     backgroundColor: colors.overlay,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.xl,
+    justifyContent: 'flex-end',
   },
-  card: {
-    width: '100%',
-    maxWidth: 360,
+  sheet: {
     alignItems: 'center',
     gap: spacing.sm,
-    padding: spacing.xl,
-    borderRadius: radius.lg,
-    borderWidth: 4,
-    borderColor: colors.border,
-    backgroundColor: colors.surfaceAlt,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.xxl,
+    borderTopLeftRadius: 36,
+    borderTopRightRadius: 36,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    backgroundImage: 'linear-gradient(180deg, #2A1466 0%, #160B3A 100%)',
+  },
+  emojiBubble: {
+    width: 110,
+    height: 110,
+    marginTop: -80,
+    borderRadius: 55,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundImage: gradients.glass,
+    backgroundColor: '#22104F',
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
   },
   verdictEmoji: {
-    fontSize: 72,
+    fontSize: 64,
   },
   points: {
-    color: colors.primary,
-    fontSize: 56,
+    color: colors.text,
+    fontSize: 64,
     fontWeight: '900',
-    textShadowColor: colors.border,
-    textShadowOffset: { width: 2, height: 3 },
-    textShadowRadius: 0,
+    letterSpacing: -2,
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 24,
   },
   pointsLabel: {
     color: colors.textMuted,
-    fontSize: 14,
-    fontWeight: '700',
+    fontSize: 13,
+    fontWeight: '800',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   verdict: {
     color: colors.text,
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '900',
     textAlign: 'center',
-    marginVertical: spacing.sm,
+    marginVertical: spacing.md,
   },
   full: {
     alignSelf: 'stretch',

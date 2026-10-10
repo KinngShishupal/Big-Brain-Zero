@@ -1,13 +1,15 @@
 import type { TranslationKey } from './en';
 
 export const hi: Record<TranslationKey, string> = {
-  'app.title': 'बिग ब्रेन ज़ीरो',
+  'app.title': 'कॉल मी डंब',
   'app.tagline': 'जितने बुद्धू, उतनी जीत।',
 
   'home.play': 'बुद्धू बनो',
   'home.best': 'सबसे कम IQ: {iq}',
   'home.noBest': 'अभी तक कोई IQ नहीं। शक़ है।',
   'home.played': 'खेले गए खेल: {count}',
+  'home.bestLabel': 'सबसे कम IQ',
+  'home.lowerIsBetter': 'जितना कम, उतना बढ़िया।',
   'home.rules':
     'ग़लत जवाब पर अंक। बेतुके जवाब पर और ज़्यादा। धीमा होना अच्छा है। मना किया बटन दबाना शानदार है। सबसे कम IQ जीतता है।',
 
@@ -19,6 +21,7 @@ export const hi: Record<TranslationKey, string> = {
   'button.label': 'मत दबाओ',
   'button.prompt': 'कुछ भी करो, बटन मत दबाना।',
   'button.presses': 'दबाया: {count}',
+  'button.pressesLabel': 'बार दबाया',
   'button.time': '{seconds} सेकंड बचे',
 
   'reaction.prompt': 'हरा होने पर टैप करें। या मत करें। आराम से।',

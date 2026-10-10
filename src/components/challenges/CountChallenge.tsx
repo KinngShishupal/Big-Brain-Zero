@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated, { ZoomIn } from 'react-native-reanimated';
 import { scoreCount } from '../../engine/stupid';
 import { useT } from '../../i18n';
 import { haptic } from '../../services/haptics';
-import { colors, radius, spacing, TOUCH_MIN } from '../../theme';
+import { colors, glow, radius, spacing, TOUCH_MIN } from '../../theme';
 import { Button } from '../Button';
 
 interface Props {
@@ -12,62 +13,58 @@ interface Props {
   onDone: (points: number) => void;
 }
 
-const STEPS = [-10, -1, 1, 10];
+function Step({ step, onPress }: { step: number; onPress: () => void }) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={step > 0 ? `+${step}` : `${step}`}
+      onPress={() => {
+        haptic('tap');
+        onPress();
+      }}
+      style={({ pressed }) => [styles.step, pressed && styles.stepPressed]}
+    >
+      <Text style={styles.stepLabel}>{step > 0 ? `+${step}` : step}</Text>
+    </Pressable>
+  );
+}
 
 export function CountChallenge({ count, dots, onDone }: Props) {
   const t = useT();
   const [guess, setGuess] = useState(1);
+  const change = (step: number) =>
+    setGuess(g => Math.min(999, Math.max(0, g + step)));
 
   return (
     <View style={styles.wrap}>
       <Text style={styles.prompt}>{t('count.prompt')}</Text>
       <View style={styles.field}>
         {dots.map((d, i) => (
-          <Text
+          <Animated.Text
             key={i}
+            entering={ZoomIn.delay(i * 35).springify()}
             style={[
               styles.chicken,
-              { left: `${d.x * 85}%`, top: `${d.y * 82}%` },
+              { left: `${d.x * 85}%`, top: `${d.y * 80}%` },
             ]}
           >
             🐔
-          </Text>
+          </Animated.Text>
         ))}
       </View>
       <View style={styles.stepper}>
-        {STEPS.slice(0, 2).map(step => (
-          <Pressable
-            key={step}
-            accessibilityRole="button"
-            accessibilityLabel={`${step}`}
-            onPress={() => {
-              haptic('tap');
-              setGuess(g => Math.max(0, g + step));
-            }}
-            style={styles.step}
-          >
-            <Text style={styles.stepLabel}>{step}</Text>
-          </Pressable>
-        ))}
-        <Text style={styles.guess}>{guess}</Text>
-        {STEPS.slice(2).map(step => (
-          <Pressable
-            key={step}
-            accessibilityRole="button"
-            accessibilityLabel={`+${step}`}
-            onPress={() => {
-              haptic('tap');
-              setGuess(g => Math.min(999, g + step));
-            }}
-            style={styles.step}
-          >
-            <Text style={styles.stepLabel}>+{step}</Text>
-          </Pressable>
-        ))}
+        <Step step={-10} onPress={() => change(-10)} />
+        <Step step={-1} onPress={() => change(-1)} />
+        <View style={styles.guessBox}>
+          <Text style={styles.guess}>{guess}</Text>
+        </View>
+        <Step step={1} onPress={() => change(1)} />
+        <Step step={10} onPress={() => change(10)} />
       </View>
       <Button
         label={t('count.submit')}
-        variant="secondary"
+        icon="✅"
+        variant="cyan"
         onPress={() => onDone(scoreCount(guess, count))}
       />
     </View>
@@ -87,11 +84,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   field: {
-    height: 260,
+    height: 270,
     borderRadius: radius.lg,
-    borderWidth: 4,
-    borderColor: colors.border,
-    backgroundColor: colors.lime,
+    borderWidth: 1,
+    borderColor: 'rgba(182, 255, 59, 0.35)',
+    backgroundImage:
+      'radial-gradient(circle at 50% 40%, rgba(182,255,59,0.28) 0%, rgba(46,219,138,0.12) 60%, rgba(255,255,255,0.04) 100%)',
+    boxShadow: glow.lime,
     overflow: 'hidden',
   },
   chicken: {
@@ -105,25 +104,33 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   step: {
-    minWidth: TOUCH_MIN + 8,
-    height: TOUCH_MIN + 8,
+    minWidth: TOUCH_MIN + 6,
+    height: TOUCH_MIN + 6,
     borderRadius: radius.md,
-    borderWidth: 3,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    backgroundColor: colors.glass,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  stepPressed: {
+    backgroundColor: colors.glassStrong,
+  },
   stepLabel: {
     color: colors.text,
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '900',
   },
+  guessBox: {
+    minWidth: 84,
+    alignItems: 'center',
+  },
   guess: {
-    minWidth: 80,
-    textAlign: 'center',
-    color: colors.primaryDark,
-    fontSize: 40,
+    color: colors.cyan,
+    fontSize: 44,
     fontWeight: '900',
+    textShadowColor: 'rgba(46, 230, 255, 0.6)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 16,
   },
 });

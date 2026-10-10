@@ -1,7 +1,7 @@
 import React from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
 import {
-  DefaultTheme,
+  DarkTheme,
   NavigationContainer,
   type Theme,
 } from '@react-navigation/native';
@@ -11,14 +11,14 @@ import { colors } from '../theme';
 import { RootNavigator } from './navigation/RootNavigator';
 
 const navTheme: Theme = {
-  ...DefaultTheme,
+  ...DarkTheme,
   colors: {
-    ...DefaultTheme.colors,
-    primary: colors.primary,
+    ...DarkTheme.colors,
+    primary: colors.pink,
     background: colors.background,
-    card: colors.surfaceAlt,
+    card: colors.background,
     text: colors.text,
-    border: colors.border,
+    border: colors.glassBorder,
   },
 };
 
@@ -26,7 +26,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>
-        <StatusBar barStyle="dark-content" />
+        <StatusBar barStyle="light-content" />
         <NavigationContainer theme={navTheme}>
           <RootNavigator />
         </NavigationContainer>
