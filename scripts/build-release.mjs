@@ -123,21 +123,25 @@ console.log(
   `Building ${kinds.join(' + ')} (v${versionName}, code ${versionCode})` +
     (drive ? ` from ${drive}\\ (short path)…` : '…'),
 );
-const run = spawnSync(
-  gradlew,
-  [
-    ...tasks,
-    // Real phones only: arm64 + 32-bit ARM. (x86/x86_64 are just for emulators.)
-    '-PreactNativeArchitectures=armeabi-v7a,arm64-v8a',
-    '--console=plain',
-  ],
-  {
-    cwd: buildAndroid,
-    stdio: 'inherit',
-    shell: process.platform === 'win32',
-    env: { ...process.env, PROJECT_REAL_ROOT: ROOT },
-  },
-);
+const gradleArgs = [
+  ...tasks,
+  // Real phones only: arm64 + 32-bit ARM. (x86/x86_64 are just for emulators.)
+  '-PreactNativeArchitectures=armeabi-v7a,arm64-v8a',
+  '--console=plain',
+];
+const spawnOptions = {
+  cwd: buildAndroid,
+  stdio: 'inherit',
+  env: { ...process.env, PROJECT_REAL_ROOT: ROOT },
+};
+// Windows needs a shell to run the .bat; pass one command string (no separate args).
+const run =
+  process.platform === 'win32'
+    ? spawnSync(`${gradlew} ${gradleArgs.join(' ')}`, {
+        ...spawnOptions,
+        shell: true,
+      })
+    : spawnSync(gradlew, gradleArgs, spawnOptions);
 unmap();
 if (run.status !== 0) {
   console.error('\n❌ Gradle build failed.');
