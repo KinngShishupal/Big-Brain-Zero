@@ -155,13 +155,24 @@ export function isGameOver(points: number): boolean {
 /** How many funny game-over roasts exist (keys gameOver.title1…N / body1…N). */
 export const GAME_OVER_QUIPS = 6;
 
-/** Picks a roast number in 1…GAME_OVER_QUIPS, never the same as the previous one. */
-export function pickQuip(previous: number, rng: () => number): number {
-  const options = Array.from(
-    { length: GAME_OVER_QUIPS },
-    (_, i) => i + 1,
-  ).filter(n => n !== previous);
+/** How many funny lines exist per verdict (keys verdict.meh1…N, dumb1…N, peak1…N). */
+export const VERDICT_LINES = 4;
+
+/** Picks a line number in 1…count, never the same as the previous one. */
+export function pickLine(
+  previous: number,
+  rng: () => number,
+  count: number,
+): number {
+  const options = Array.from({ length: count }, (_, i) => i + 1).filter(
+    n => n !== previous,
+  );
   return options[Math.floor(rng() * options.length)];
+}
+
+/** Picks a game-over roast in 1…GAME_OVER_QUIPS, never repeating the previous one. */
+export function pickQuip(previous: number, rng: () => number): number {
+  return pickLine(previous, rng, GAME_OVER_QUIPS);
 }
 
 /** IQ range shown on the result gauge (matches iqFor's output). */

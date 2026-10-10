@@ -5,7 +5,9 @@ import {
   iqToAngle,
   GAME_OVER_QUIPS,
   isGameOver,
+  pickLine,
   pickQuip,
+  VERDICT_LINES,
   makeRng,
   maxScore,
   rankFor,
@@ -171,5 +173,30 @@ describe('iqToAngle (result gauge)', () => {
     expect(iqToAngle(82.5)).toBeCloseTo(0);
     expect(iqToAngle(0)).toBe(-90);
     expect(iqToAngle(999)).toBe(90);
+  });
+});
+
+describe('verdict lines', () => {
+  it('pickLine never repeats and stays in range', () => {
+    const rng = makeRng(7);
+    let prev = 0;
+    for (let i = 0; i < 100; i++) {
+      const n = pickLine(prev, rng, VERDICT_LINES);
+      expect(n).toBeGreaterThanOrEqual(1);
+      expect(n).toBeLessThanOrEqual(VERDICT_LINES);
+      expect(n).not.toBe(prev);
+      prev = n;
+    }
+  });
+
+  it('has every funny line in English and Hindi', () => {
+    const { en } = require('../src/i18n/en');
+    const { hi } = require('../src/i18n/hi');
+    for (const v of ['meh', 'dumb', 'peak']) {
+      for (let n = 1; n <= VERDICT_LINES; n++) {
+        expect(en[`verdict.${v}${n}`]).toBeTruthy();
+        expect(hi[`verdict.${v}${n}`]).toBeTruthy();
+      }
+    }
   });
 });

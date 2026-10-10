@@ -25,7 +25,9 @@ import {
   buildRun,
   isGameOver,
   makeRng,
+  pickLine,
   pickQuip,
+  VERDICT_LINES,
   maxScore,
   verdictFor,
   type Challenge,
@@ -130,6 +132,8 @@ export function PlayScreen({ navigation }: Props) {
   const [retrying, setRetrying] = useState(false);
   /** Which funny game-over roast to show (1…GAME_OVER_QUIPS). */
   const [quip, setQuip] = useState(1);
+  /** Which funny line to show for a scored verdict (1…VERDICT_LINES). */
+  const [verdictLine, setVerdictLine] = useState(1);
 
   const progress = useSharedValue(0);
   useEffect(() => {
@@ -158,6 +162,8 @@ export function PlayScreen({ navigation }: Props) {
       playSfx('whoosh', 0.5);
       if (isGameOver(points)) {
         setQuip(prev => pickQuip(prev, Math.random));
+      } else {
+        setVerdictLine(prev => pickLine(prev, Math.random, VERDICT_LINES));
       }
       setTotal(prev => prev + points);
       setLastPoints(points);
@@ -337,7 +343,9 @@ export function PlayScreen({ navigation }: Props) {
                   <Text style={styles.pointsLabel}>
                     {t('play.points', { points: lastPoints ?? 0 })}
                   </Text>
-                  <Text style={styles.verdict}>{t(`verdict.${verdict!}`)}</Text>
+                  <Text style={styles.verdict}>
+                    {t(`verdict.${verdict!}${verdictLine}` as TranslationKey)}
+                  </Text>
                   <Button
                     label={t('verdict.continue')}
                     icon="👉"
