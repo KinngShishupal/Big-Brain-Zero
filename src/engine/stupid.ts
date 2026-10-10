@@ -163,3 +163,13 @@ export function pickQuip(previous: number, rng: () => number): number {
   ).filter(n => n !== previous);
   return options[Math.floor(rng() * options.length)];
 }
+
+/** IQ range shown on the result gauge (matches iqFor's output). */
+export const IQ_MIN = 5;
+export const IQ_MAX = 160;
+
+/** IQ → gauge needle angle in degrees: 5 points far left (-90°), 160 far right (+90°). */
+export function iqToAngle(iq: number): number {
+  const clamped = Math.min(IQ_MAX, Math.max(IQ_MIN, iq));
+  return -90 + ((clamped - IQ_MIN) / (IQ_MAX - IQ_MIN)) * 180;
+}

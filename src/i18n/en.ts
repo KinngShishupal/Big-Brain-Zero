@@ -2,19 +2,24 @@ export const en = {
   'app.title': 'Call Me Dumb',
   'app.tagline': 'The dumber you are, the more you win.',
 
-  'home.play': 'Play dumb',
+  'home.play': "Let's Get Dumb",
   'home.best': 'Lowest IQ: {iq}',
   'home.noBest': 'No IQ yet. Suspicious.',
   'home.played': 'Games played: {count}',
+
+  'howTo.title': 'How to play',
+  'howTo.dumb':
+    'Be dumb. Wrong answers win points. The more ridiculous, the better.',
+  'howTo.smart': 'A correct answer ends the game. Seriously, do not be smart.',
+  'howTo.slow': 'Slow is good. Rushing is for geniuses.',
+  'howTo.rules': 'Rules in big red letters? Break them.',
+  'howTo.win': 'Lowest IQ wins.',
+  'howTo.go': "Got it, let's be dumb",
   'home.bestLabel': 'Lowest IQ',
   'home.lowerIsBetter': 'Lower is better. Obviously.',
-  'home.rules':
-    'Wrong answers score. Absurd answers score more. Slow is good. Pressing forbidden buttons is great. Lowest IQ wins.',
 
   'play.progress': 'Challenge {n} / {total}',
   'play.points': '{points} stupidity points',
-
-  'quiz.prompt': 'Pick the DUMBEST answer',
 
   'button.label': 'DO NOT PRESS',
   'button.prompt': 'Whatever you do, do NOT press the button.',
@@ -22,11 +27,11 @@ export const en = {
   'button.pressesLabel': 'presses',
   'button.time': '{seconds}s left',
 
-  'reaction.prompt': 'Tap when it turns green. Or don’t. Take your time.',
+  'reaction.prompt': 'Tap when it turns green!',
   'reaction.wait': 'Wait for green…',
   'reaction.go': 'GREEN! (no rush)',
 
-  'count.prompt': 'How many chickens? Be as wrong as possible.',
+  'count.prompt': 'How many chickens?',
   'count.submit': 'This is definitely right',
 
   'verdict.smart': 'Ugh. That was smart. Disgusting.',

@@ -87,3 +87,16 @@ describe('improveBest', () => {
     expect(useSaveStore.getState().gamesPlayed).toBe(1);
   });
 });
+
+describe('tutorial (how to play)', () => {
+  it('starts unseen for new players and stays seen once marked', () => {
+    expect(useSaveStore.getState().tutorialSeen).toBe(false);
+    useSaveStore.getState().markTutorialSeen();
+    expect(useSaveStore.getState().tutorialSeen).toBe(true);
+  });
+
+  it('v2 → v3: existing players skip it, brand-new saves still see it', () => {
+    expect(migrateSave({ gamesPlayed: 4 }, 2).tutorialSeen).toBe(true);
+    expect(migrateSave({ gamesPlayed: 0 }, 2).tutorialSeen).toBe(false);
+  });
+});

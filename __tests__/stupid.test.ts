@@ -2,6 +2,7 @@ import { QUESTIONS } from '../src/data/questions';
 import {
   buildRun,
   iqFor,
+  iqToAngle,
   GAME_OVER_QUIPS,
   isGameOver,
   pickQuip,
@@ -160,5 +161,15 @@ describe('pickQuip', () => {
         expect(dict[`gameOver.body${n}`]).toBeTruthy();
       }
     }
+  });
+});
+
+describe('iqToAngle (result gauge)', () => {
+  it('maps the IQ range onto a half circle and clamps outside it', () => {
+    expect(iqToAngle(5)).toBe(-90);
+    expect(iqToAngle(160)).toBe(90);
+    expect(iqToAngle(82.5)).toBeCloseTo(0);
+    expect(iqToAngle(0)).toBe(-90);
+    expect(iqToAngle(999)).toBe(90);
   });
 });

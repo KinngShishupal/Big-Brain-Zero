@@ -2,14 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Animated, {
-  Easing,
   FadeIn,
   FadeInDown,
   FadeInUp,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
   ZoomIn,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -18,6 +13,7 @@ import { Backdrop } from '../components/Backdrop';
 import { Button } from '../components/Button';
 import { Confetti } from '../components/Confetti';
 import { GlassCard } from '../components/GlassCard';
+import { IqGauge } from '../components/IqGauge';
 import { doubledScore, shouldShowInterstitial } from '../engine/adPolicy';
 import { iqFor, rankFor, type Rank } from '../engine/stupid';
 import { useT } from '../i18n';
@@ -153,17 +149,6 @@ export function ResultScreen({ navigation, route }: Props) {
     }
   };
 
-  const spin = useSharedValue(0);
-  useEffect(() => {
-    spin.value = withRepeat(
-      withTiming(1, { duration: 12000, easing: Easing.linear }),
-      -1,
-    );
-  }, [spin]);
-  const ringStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${spin.value * 360}deg` }],
-  }));
-
   return (
     <Backdrop>
       <View
@@ -180,14 +165,8 @@ export function ResultScreen({ navigation, route }: Props) {
             {t('result.title')}
           </Animated.Text>
 
-          <Animated.View
-            entering={ZoomIn.springify().damping(12)}
-            style={styles.dial}
-          >
-            <Animated.View style={[styles.ring, ringStyle]} />
-            <View style={styles.dialInner}>
-              <Text style={styles.iq}>{shown}</Text>
-            </View>
+          <Animated.View entering={FadeIn.duration(300)}>
+            <IqGauge iq={iq} sweepMs={COUNT_MS} readout={shown} />
           </Animated.View>
 
           <Animated.View
@@ -260,8 +239,6 @@ export function ResultScreen({ navigation, route }: Props) {
   );
 }
 
-const DIAL = 220;
-
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
@@ -279,38 +256,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     textTransform: 'uppercase',
     letterSpacing: 4,
-  },
-  dial: {
-    width: DIAL,
-    height: DIAL,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  ring: {
-    position: 'absolute',
-    width: DIAL,
-    height: DIAL,
-    borderRadius: DIAL / 2,
-    backgroundImage:
-      'linear-gradient(135deg, #2EE6FF 0%, #8B5CFF 35%, #FF4FD8 65%, #FFD84D 100%)',
-    boxShadow: '0px 0px 50px rgba(139, 92, 255, 0.6)',
-  },
-  dialInner: {
-    width: DIAL - 16,
-    height: DIAL - 16,
-    borderRadius: (DIAL - 16) / 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#150A38',
-  },
-  iq: {
-    color: colors.text,
-    fontSize: 88,
-    fontWeight: '900',
-    letterSpacing: -3,
-    textShadowColor: 'rgba(255, 79, 216, 0.8)',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 28,
   },
   full: {
     alignSelf: 'stretch',

@@ -4,19 +4,24 @@ export const hi: Record<TranslationKey, string> = {
   'app.title': 'कॉल मी डंब',
   'app.tagline': 'जितने बुद्धू, उतनी जीत।',
 
-  'home.play': 'बुद्धू बनो',
+  'home.play': 'चलो बुद्धू बनें',
   'home.best': 'सबसे कम IQ: {iq}',
   'home.noBest': 'अभी तक कोई IQ नहीं। शक़ है।',
   'home.played': 'खेले गए खेल: {count}',
+
+  'howTo.title': 'कैसे खेलें',
+  'howTo.dumb':
+    'बुद्धू बनो। ग़लत जवाब पर अंक मिलते हैं। जितना बेतुका, उतना बढ़िया।',
+  'howTo.smart': 'सही जवाब दिया तो खेल ख़त्म। सच में, होशियारी मत दिखाना।',
+  'howTo.slow': 'धीमा होना अच्छा है। जल्दबाज़ी जीनियस करते हैं।',
+  'howTo.rules': 'बड़े लाल अक्षरों में नियम? तोड़ दो।',
+  'howTo.win': 'सबसे कम IQ जीतता है।',
+  'howTo.go': 'समझ गया, चलो बुद्धू बनें',
   'home.bestLabel': 'सबसे कम IQ',
   'home.lowerIsBetter': 'जितना कम, उतना बढ़िया।',
-  'home.rules':
-    'ग़लत जवाब पर अंक। बेतुके जवाब पर और ज़्यादा। धीमा होना अच्छा है। मना किया बटन दबाना शानदार है। सबसे कम IQ जीतता है।',
 
   'play.progress': 'चुनौती {n} / {total}',
   'play.points': '{points} बुद्धूपन अंक',
-
-  'quiz.prompt': 'सबसे बेवकूफ़ी भरा जवाब चुनें',
 
   'button.label': 'मत दबाओ',
   'button.prompt': 'कुछ भी करो, बटन मत दबाना।',
@@ -24,11 +29,11 @@ export const hi: Record<TranslationKey, string> = {
   'button.pressesLabel': 'बार दबाया',
   'button.time': '{seconds} सेकंड बचे',
 
-  'reaction.prompt': 'हरा होने पर टैप करें। या मत करें। आराम से।',
+  'reaction.prompt': 'हरा होते ही टैप करें!',
   'reaction.wait': 'हरे का इंतज़ार…',
   'reaction.go': 'हरा! (कोई जल्दी नहीं)',
 
-  'count.prompt': 'कितनी मुर्गियाँ हैं? जितना ग़लत हो सके।',
+  'count.prompt': 'कितनी मुर्गियाँ हैं?',
   'count.submit': 'यही बिल्कुल सही है',
 
   'verdict.smart': 'छी। ये तो समझदारी थी।',

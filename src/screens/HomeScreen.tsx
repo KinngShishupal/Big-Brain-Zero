@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Animated, {
@@ -16,6 +16,7 @@ import type { RootStackParamList } from '../app/navigation/types';
 import { Backdrop } from '../components/Backdrop';
 import { Button } from '../components/Button';
 import { GlassCard } from '../components/GlassCard';
+import { HowToPlayModal } from '../components/HowToPlayModal';
 import { useT } from '../i18n';
 import { haptic } from '../services/haptics';
 import { useSaveStore } from '../store/saveStore';
@@ -23,13 +24,23 @@ import { colors, radius, spacing, TOUCH_MIN } from '../theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
-const RULES = ['🤪', '🐢', '🔴', '🐔'];
-
 export function HomeScreen({ navigation }: Props) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const bestIq = useSaveStore(s => s.bestIq);
   const gamesPlayed = useSaveStore(s => s.gamesPlayed);
+  const tutorialSeen = useSaveStore(s => s.tutorialSeen);
+  const markTutorialSeen = useSaveStore(s => s.markTutorialSeen);
+  const [showHowTo, setShowHowTo] = useState(false);
+
+  // How to play appears once, the very first time someone starts a game.
+  const play = () => {
+    if (tutorialSeen) {
+      navigation.navigate('Play');
+    } else {
+      setShowHowTo(true);
+    }
+  };
 
   // The brain floats and wobbles, as brains do.
   const float = useSharedValue(0);
@@ -120,33 +131,21 @@ export function HomeScreen({ navigation }: Props) {
               </Text>
             </GlassCard>
           </Animated.View>
-
-          <Animated.View
-            entering={FadeInDown.delay(400).springify()}
-            style={styles.rules}
-          >
-            {RULES.map(r => (
-              <View key={r} style={styles.ruleChip}>
-                <Text style={styles.ruleEmoji}>{r}</Text>
-              </View>
-            ))}
-          </Animated.View>
-          <Animated.Text
-            entering={FadeInDown.delay(450).springify()}
-            style={styles.rulesText}
-          >
-            {t('home.rules')}
-          </Animated.Text>
         </View>
 
         <Animated.View entering={FadeInUp.delay(500).springify()}>
-          <Button
-            label={t('home.play')}
-            icon="🤪"
-            onPress={() => navigation.navigate('Play')}
-          />
+          <Button label={t('home.play')} icon="🤪" onPress={play} />
         </Animated.View>
       </View>
+
+      <HowToPlayModal
+        visible={showHowTo}
+        onDone={() => {
+          setShowHowTo(false);
+          markTutorialSeen();
+          navigation.navigate('Play');
+        }}
+      />
     </Backdrop>
   );
 }
@@ -260,29 +259,5 @@ const styles = StyleSheet.create({
     color: colors.textFaint,
     fontSize: 13,
     fontWeight: '700',
-  },
-  rules: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginTop: spacing.sm,
-  },
-  ruleChip: {
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.glass,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  ruleEmoji: {
-    fontSize: 22,
-  },
-  rulesText: {
-    color: colors.textMuted,
-    fontSize: 13,
-    textAlign: 'center',
-    lineHeight: 19,
   },
 });

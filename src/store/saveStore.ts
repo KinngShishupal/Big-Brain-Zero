@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { mmkvStorage } from './storage';
 
 /** Bump when the persisted shape changes and add a step to `migrateSave`. */
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 export const SAVE_KEY = 'big-brain-zero-save';
 
 export type Language = 'en' | 'hi';
@@ -20,12 +20,15 @@ export interface SaveData {
   /** Lowest IQ ever achieved (lower is better). null until the first run. */
   bestIq: number | null;
   gamesPlayed: number;
+  /** How to play has been shown (once, before the first game). */
+  tutorialSeen: boolean;
   settings: Settings;
 }
 
 export interface SaveActions {
   recordRun: (iq: number) => boolean;
   improveBest: (iq: number) => boolean;
+  markTutorialSeen: () => void;
   setHaptics: (enabled: boolean) => void;
   setLanguage: (language: Language) => void;
   setSound: (enabled: boolean) => void;
@@ -40,6 +43,7 @@ export function createInitialSave(): SaveData {
     saveVersion: SAVE_VERSION,
     bestIq: null,
     gamesPlayed: 0,
+    tutorialSeen: false,
     settings: { haptics: true, language: 'en', sound: true, music: true },
   };
 }
@@ -70,6 +74,8 @@ export const useSaveStore = create<SaveState>()(
         return true;
       },
 
+      markTutorialSeen: () => set({ tutorialSeen: true }),
+
       setHaptics: haptics =>
         set(s => ({ settings: { ...s.settings, haptics } })),
 
@@ -90,6 +96,7 @@ export const useSaveStore = create<SaveState>()(
         saveVersion: SAVE_VERSION,
         bestIq: s.bestIq,
         gamesPlayed: s.gamesPlayed,
+        tutorialSeen: s.tutorialSeen,
         settings: s.settings,
       }),
       migrate: (persisted, version) => migrateSave(persisted, version),
@@ -119,6 +126,10 @@ export function migrateSave(persisted: unknown, version: number): SaveData {
     ...old,
     settings: { ...base.settings, ...(old.settings ?? {}) },
   };
+  // v2 → v3: added tutorialSeen. Anyone who has already played has clearly figured it out.
+  if (version < 3 && old.tutorialSeen === undefined) {
+    data = { ...data, tutorialSeen: (old.gamesPlayed ?? 0) > 0 };
+  }
   if (version < SAVE_VERSION) {
     data = { ...data, saveVersion: SAVE_VERSION };
   }

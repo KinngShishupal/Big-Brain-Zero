@@ -3,7 +3,6 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInDown, ZoomIn } from 'react-native-reanimated';
 import type { Question } from '../../data/questions';
 import { scoreQuiz } from '../../engine/stupid';
-import { useT } from '../../i18n';
 import { haptic } from '../../services/haptics';
 import { playSfx } from '../../services/sound';
 import { useSaveStore } from '../../store/saveStore';
@@ -21,7 +20,6 @@ const ACCENTS = ['pink', 'cyan', 'lime', 'gold'] as const;
 const SELECT_MS = 320;
 
 export function QuizChallenge({ question, order, onDone }: Props) {
-  const t = useT();
   const lang = useSaveStore(s => s.settings.language);
   const [picked, setPicked] = useState<number | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -53,7 +51,6 @@ export function QuizChallenge({ question, order, onDone }: Props) {
     <View style={styles.wrap}>
       <Animated.View entering={ZoomIn.springify().damping(14)}>
         <GlassCard style={styles.card}>
-          <Text style={styles.prompt}>🤡 {t('quiz.prompt')}</Text>
           <Text style={styles.question}>{question[lang]}</Text>
         </GlassCard>
       </Animated.View>
@@ -114,14 +111,6 @@ const styles = StyleSheet.create({
   card: {
     paddingVertical: spacing.xl,
     gap: spacing.md,
-  },
-  prompt: {
-    color: colors.pink,
-    fontSize: 13,
-    fontWeight: '900',
-    textAlign: 'center',
-    textTransform: 'uppercase',
-    letterSpacing: 2,
   },
   question: {
     color: colors.text,
