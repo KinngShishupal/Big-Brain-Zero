@@ -1,0 +1,128 @@
+import { QUESTIONS } from '../src/data/questions';
+import {
+  buildRun,
+  iqFor,
+  makeRng,
+  maxScore,
+  rankFor,
+  RUN_LAYOUT,
+  scoreButton,
+  scoreCount,
+  scoreQuiz,
+  scoreReaction,
+  shuffle,
+  verdictFor,
+} from '../src/engine/stupid';
+
+describe('question data', () => {
+  it.each(QUESTIONS.map(q => [q.id, q] as const))(
+    '%s has one answer per dumbness level',
+    (_id, q) => {
+      expect(q.answers.map(a => a.dumb).sort()).toEqual([0, 1, 2, 3]);
+      q.answers.forEach(a => {
+        expect(a.en.length).toBeGreaterThan(0);
+        expect(a.hi.length).toBeGreaterThan(0);
+      });
+    },
+  );
+
+  it('has unique ids and enough questions for a run', () => {
+    expect(new Set(QUESTIONS.map(q => q.id)).size).toBe(QUESTIONS.length);
+    expect(QUESTIONS.length).toBeGreaterThanOrEqual(RUN_LAYOUT.quiz);
+  });
+});
+
+describe('rng and shuffle', () => {
+  it('is deterministic per seed', () => {
+    const a = makeRng(42);
+    const b = makeRng(42);
+    expect([a(), a(), a()]).toEqual([b(), b(), b()]);
+  });
+
+  it('shuffle keeps every item', () => {
+    const out = shuffle([1, 2, 3, 4, 5], makeRng(7));
+    expect([...out].sort()).toEqual([1, 2, 3, 4, 5]);
+  });
+});
+
+describe('buildRun', () => {
+  const run = buildRun(makeRng(1));
+
+  it('has the configured mix of challenges', () => {
+    const count = (k: string) => run.filter(c => c.kind === k).length;
+    expect(count('quiz')).toBe(RUN_LAYOUT.quiz);
+    expect(count('button')).toBe(RUN_LAYOUT.button);
+    expect(count('reaction')).toBe(RUN_LAYOUT.reaction);
+    expect(count('count')).toBe(RUN_LAYOUT.count);
+    expect(maxScore(run)).toBe(run.length * 100);
+  });
+
+  it('never repeats a question and keeps dot counts honest', () => {
+    const ids = run.flatMap(c => (c.kind === 'quiz' ? [c.question.id] : []));
+    expect(new Set(ids).size).toBe(ids.length);
+    run.forEach(c => {
+      if (c.kind === 'count') {
+        expect(c.dots).toHaveLength(c.count);
+        expect(c.count).toBeGreaterThanOrEqual(5);
+      }
+      if (c.kind === 'quiz') {
+        expect([...c.order].sort()).toEqual([0, 1, 2, 3]);
+      }
+    });
+  });
+});
+
+describe('scoring rewards stupidity', () => {
+  it('quiz: correct is worthless, absurd is perfect', () => {
+    const q = QUESTIONS[0];
+    const byDumb = (d: number) => q.answers.find(a => a.dumb === d)!;
+    expect(scoreQuiz(byDumb(0))).toBe(0);
+    expect(scoreQuiz(byDumb(1))).toBe(50);
+    expect(scoreQuiz(byDumb(2))).toBe(75);
+    expect(scoreQuiz(byDumb(3))).toBe(100);
+  });
+
+  it('button: pressing the forbidden button pays, capped at 100', () => {
+    expect(scoreButton(0)).toBe(0);
+    expect(scoreButton(7)).toBe(35);
+    expect(scoreButton(500)).toBe(100);
+  });
+
+  it('reaction: slow wins, early gets a consolation prize', () => {
+    expect(scoreReaction({ early: false, delayMs: 200 })).toBe(7);
+    expect(scoreReaction({ early: false, delayMs: 3000 })).toBe(100);
+    expect(scoreReaction({ early: false, delayMs: 99999 })).toBe(100);
+    expect(scoreReaction({ early: true })).toBe(60);
+  });
+
+  it('count: the wronger the better', () => {
+    expect(scoreCount(12, 12)).toBe(0);
+    expect(scoreCount(9, 12)).toBe(30);
+    expect(scoreCount(99, 12)).toBe(100);
+  });
+});
+
+describe('IQ and ranks', () => {
+  it('maps score to an inverted IQ', () => {
+    expect(iqFor(0, 1000)).toBe(160);
+    expect(iqFor(1000, 1000)).toBe(5);
+    expect(iqFor(500, 1000)).toBe(83);
+    expect(iqFor(5000, 1000)).toBe(5);
+    expect(iqFor(10, 0)).toBe(160);
+  });
+
+  it('assigns ranks', () => {
+    expect(rankFor(5)).toBe('potato');
+    expect(rankFor(40)).toBe('goofball');
+    expect(rankFor(83)).toBe('chicken');
+    expect(rankFor(120)).toBe('normal');
+    expect(rankFor(160)).toBe('genius');
+  });
+
+  it('gives verdicts', () => {
+    expect(verdictFor(0)).toBe('smart');
+    expect(verdictFor(30)).toBe('meh');
+    expect(verdictFor(75)).toBe('dumb');
+    expect(verdictFor(100)).toBe('peak');
+  });
+});
