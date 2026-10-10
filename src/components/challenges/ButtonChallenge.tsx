@@ -12,6 +12,7 @@ import Animated, {
 import { scoreButton } from '../../engine/stupid';
 import { useT } from '../../i18n';
 import { haptic } from '../../services/haptics';
+import { playSfx } from '../../services/sound';
 import { colors, gradients, radius, spacing } from '../../theme';
 
 interface Props {
@@ -52,6 +53,7 @@ export function ButtonChallenge({ seconds, onDone }: Props) {
     pressesRef.current += 1;
     setPresses(pressesRef.current);
     haptic('bonk');
+    playSfx('bonk', 0.8);
     scale.value = withSequence(
       withTiming(0.88, { duration: 45 }),
       withTiming(1, { duration: 110 }),

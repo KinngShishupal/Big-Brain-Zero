@@ -88,7 +88,11 @@ export function HomeScreen({ navigation }: Props) {
         <View style={styles.hero}>
           <View style={styles.brainStage}>
             <Animated.View style={[styles.halo, haloStyle]} />
-            <Animated.Text style={[styles.brain, brainStyle]}>🧠</Animated.Text>
+            <Animated.Image
+              source={require('../assets/logo.png')}
+              style={[styles.brain, brainStyle]}
+              accessibilityIgnoresInvertColors
+            />
           </View>
 
           <Animated.Text
@@ -210,7 +214,8 @@ const styles = StyleSheet.create({
       'radial-gradient(circle, rgba(255,79,216,0.55) 0%, rgba(139,92,255,0.25) 45%, transparent 70%)',
   },
   brain: {
-    fontSize: 104,
+    width: 170,
+    height: 170,
   },
   title: {
     color: colors.text,

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
 import {
   DarkTheme,
@@ -7,6 +7,8 @@ import {
 } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { initAds } from '../services/ads';
+import { initSound } from '../services/sound';
 import { colors } from '../theme';
 import { RootNavigator } from './navigation/RootNavigator';
 
@@ -23,6 +25,11 @@ const navTheme: Theme = {
 };
 
 export default function App() {
+  useEffect(() => {
+    initAds();
+    initSound().catch(error => console.warn('[sound] init failed', error));
+  }, []);
+
   return (
     <GestureHandlerRootView style={styles.root}>
       <SafeAreaProvider>

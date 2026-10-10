@@ -13,6 +13,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { haptic } from '../services/haptics';
+import { playSfx } from '../services/sound';
 import { colors, glow, gradients, radius, spacing, TOUCH_MIN } from '../theme';
 
 export type ButtonVariant =
@@ -66,6 +67,7 @@ function ButtonImpl({
         }}
         onPress={() => {
           haptic('tap');
+          playSfx('tap');
           onPress();
         }}
         style={[

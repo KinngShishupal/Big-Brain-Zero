@@ -37,10 +37,34 @@ export const hi: Record<TranslationKey, string> = {
   'verdict.peak': 'बुद्धूपन का शिखर 🏆',
   'verdict.continue': 'आगे',
 
+  'gameOver.title1': '🚨 दिमाग़ पकड़ा गया!',
+  'gameOver.body1':
+    'सिक्योरिटी को बुला लिया है। वीडियो देखो और अपना बुद्धूपन वापस पाओ।',
+  'gameOver.title2': 'छी, तुम तो होशियार निकले।',
+  'gameOver.body2':
+    'ज़्यादा होशियारी किसी को पसंद नहीं। वीडियो देखो और सब भूल जाओ।',
+  'gameOver.title3': 'आइंस्टीन आ गए!',
+  'gameOver.body3':
+    'कृपया बाहर जाइए। वीडियो देखकर IQ घटाइए और फिर से कोशिश कीजिए।',
+  'gameOver.title4': 'अरे! तुमने दिमाग़ लगा दिया।',
+  'gameOver.body4':
+    'यही तो एक नियम था। वीडियो देखो, हम मान लेंगे कुछ हुआ ही नहीं।',
+  'gameOver.title5': 'टीचर को गर्व होगा। हमें नहीं।',
+  'gameOver.body5': 'वीडियो देखकर अपनी गलती सुधारो, पढ़ाकू।',
+  'gameOver.title6': 'सही जवाब?! इस ज़माने में?',
+  'gameOver.body6': 'किसी के देखने से पहले वीडियो देखकर दोबारा खेलो।',
+  'gameOver.retry': 'वीडियो देखकर दोबारा खेलें',
+  'gameOver.loading': 'वीडियो लोड हो रहा है…',
+  'gameOver.end': 'खेल ख़त्म करें',
+
   'result.title': 'आपका IQ',
   'result.score': '{score} / {max} बुद्धूपन अंक',
+  'result.gameOver': 'चुनौती {n} पर खेल ख़त्म: दिमाग़ इस्तेमाल करते पकड़े गए।',
   'result.newBest': 'अब तक का सबसे कम IQ! घरवालों को गर्व होगा।',
   'result.again': 'और बुद्धू बनो',
+  'result.doubleAd': 'विज्ञापन देखो, बुद्धूपन दोगुना करो',
+  'result.adLoading': 'विज्ञापन लोड हो रहा है…',
+  'result.doubled': 'बुद्धूपन दोगुना! 🎬',
   'result.home': 'होम',
 
   'rank.potato': 'महा आलू 🥔 — महान बेवकूफ़ी। आप जीते!',
@@ -51,8 +75,11 @@ export const hi: Record<TranslationKey, string> = {
 
   'settings.title': 'सेटिंग्स',
   'settings.haptics': 'कंपन',
+  'settings.music': 'संगीत',
+  'settings.sound': 'साउंड इफ़ेक्ट',
   'settings.language': 'भाषा',
   'settings.reset': 'आँकड़े रीसेट करें',
+  'settings.privacy': 'गोपनीयता और विज्ञापन विकल्प',
   'settings.resetConfirmTitle': 'आँकड़े रीसेट करें?',
   'settings.resetConfirmBody':
     'आपका सबसे कम IQ और खेले गए खेल भुला दिए जाएंगे।',

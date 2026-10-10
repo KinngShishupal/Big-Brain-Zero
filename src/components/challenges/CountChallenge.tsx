@@ -4,6 +4,7 @@ import Animated, { ZoomIn } from 'react-native-reanimated';
 import { scoreCount } from '../../engine/stupid';
 import { useT } from '../../i18n';
 import { haptic } from '../../services/haptics';
+import { playSfx } from '../../services/sound';
 import { colors, glow, radius, spacing, TOUCH_MIN } from '../../theme';
 import { Button } from '../Button';
 
@@ -20,6 +21,7 @@ function Step({ step, onPress }: { step: number; onPress: () => void }) {
       accessibilityLabel={step > 0 ? `+${step}` : `${step}`}
       onPress={() => {
         haptic('tap');
+        playSfx('tap', 0.7);
         onPress();
       }}
       style={({ pressed }) => [styles.step, pressed && styles.stepPressed]}

@@ -15,7 +15,9 @@ import { Backdrop } from '../components/Backdrop';
 import { Button } from '../components/Button';
 import { GlassCard } from '../components/GlassCard';
 import { useT } from '../i18n';
+import { openPrivacyOptions, useAds } from '../services/ads';
 import { haptic } from '../services/haptics';
+import { playSfx } from '../services/sound';
 import { useSaveStore, type Language } from '../store/saveStore';
 import { colors, gradients, radius, spacing, TOUCH_MIN } from '../theme';
 import { version } from '../../package.json';
@@ -27,12 +29,42 @@ const LANGUAGES: { id: Language; label: string }[] = [
   { id: 'hi', label: 'हिन्दी' },
 ];
 
+function ToggleRow({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <View style={styles.row}>
+      <Text style={styles.label}>{label}</Text>
+      <Switch
+        value={value}
+        onValueChange={next => {
+          onChange(next);
+          haptic('tap');
+          playSfx('tap');
+        }}
+        trackColor={{ true: colors.violet, false: 'rgba(255,255,255,0.2)' }}
+        thumbColor={value ? colors.pink : '#DDD'}
+      />
+    </View>
+  );
+}
+
 export function SettingsScreen({ navigation }: Props) {
   const t = useT();
   const insets = useSafeAreaInsets();
   const settings = useSaveStore(s => s.settings);
   const setHaptics = useSaveStore(s => s.setHaptics);
   const setLanguage = useSaveStore(s => s.setLanguage);
+  const setSound = useSaveStore(s => s.setSound);
+  const setMusic = useSaveStore(s => s.setMusic);
+  // Shown only where the consent rules require a way to change ad choices.
+  const privacyRequired = useAds(s => s.privacyOptionsRequired);
 
   const confirmReset = () => {
     Alert.alert(
@@ -76,22 +108,22 @@ export function SettingsScreen({ navigation }: Props) {
           <Text style={styles.title}>{t('settings.title')}</Text>
         </View>
 
-        <GlassCard>
-          <View style={styles.row}>
-            <Text style={styles.label}>📳 {t('settings.haptics')}</Text>
-            <Switch
-              value={settings.haptics}
-              onValueChange={value => {
-                setHaptics(value);
-                haptic('tap');
-              }}
-              trackColor={{
-                true: colors.violet,
-                false: 'rgba(255,255,255,0.2)',
-              }}
-              thumbColor={settings.haptics ? colors.pink : '#DDD'}
-            />
-          </View>
+        <GlassCard style={styles.toggles}>
+          <ToggleRow
+            label={`🎵 ${t('settings.music')}`}
+            value={settings.music}
+            onChange={setMusic}
+          />
+          <ToggleRow
+            label={`🔊 ${t('settings.sound')}`}
+            value={settings.sound}
+            onChange={setSound}
+          />
+          <ToggleRow
+            label={`📳 ${t('settings.haptics')}`}
+            value={settings.haptics}
+            onChange={setHaptics}
+          />
         </GlassCard>
 
         <GlassCard style={styles.gap}>
@@ -123,6 +155,17 @@ export function SettingsScreen({ navigation }: Props) {
             })}
           </View>
         </GlassCard>
+
+        {privacyRequired && (
+          <Button
+            variant="glass"
+            icon="🔒"
+            label={t('settings.privacy')}
+            onPress={() => {
+              openPrivacyOptions().catch(() => {});
+            }}
+          />
+        )}
 
         <Button
           variant="red"
@@ -167,6 +210,9 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: '900',
     letterSpacing: -0.5,
+  },
+  toggles: {
+    gap: spacing.xs,
   },
   row: {
     minHeight: TOUCH_MIN,

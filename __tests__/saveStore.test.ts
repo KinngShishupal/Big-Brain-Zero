@@ -58,3 +58,32 @@ describe('migrateSave', () => {
     expect(migrated.saveVersion).toBe(SAVE_VERSION);
   });
 });
+
+describe('v1 → v2 migration', () => {
+  it('keeps old stats and settings, adds sound and music defaults', () => {
+    const v1 = {
+      bestIq: 42,
+      gamesPlayed: 7,
+      settings: { haptics: false, language: 'hi' },
+    };
+    const migrated = migrateSave(v1, 1);
+    expect(migrated.bestIq).toBe(42);
+    expect(migrated.gamesPlayed).toBe(7);
+    expect(migrated.settings).toEqual({
+      haptics: false,
+      language: 'hi',
+      sound: true,
+      music: true,
+    });
+  });
+});
+
+describe('improveBest', () => {
+  it('only lowers the best IQ', () => {
+    useSaveStore.getState().recordRun(80);
+    expect(useSaveStore.getState().improveBest(90)).toBe(false);
+    expect(useSaveStore.getState().improveBest(40)).toBe(true);
+    expect(useSaveStore.getState().bestIq).toBe(40);
+    expect(useSaveStore.getState().gamesPlayed).toBe(1);
+  });
+});

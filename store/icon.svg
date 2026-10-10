@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8B5CFF"/>
+      <stop offset="0.55" stop-color="#C64BE8"/>
+      <stop offset="1" stop-color="#FF4FD8"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.45" r="0.55">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="brain" gradientUnits="userSpaceOnUse" x1="0" y1="170" x2="0" y2="760">
+      <stop offset="0" stop-color="#FFB3DA"/>
+      <stop offset="1" stop-color="#FF6FC4"/>
+    </linearGradient>
+  </defs><rect width="1024" height="1024" fill="url(#bg)"/><rect width="1024" height="1024" fill="url(#glow)"/><g transform="translate(512 512) scale(1.15) translate(-512 -505)">
+    <g>
+      <circle cx="330" cy="440" r="166" fill="#7A1260"/><circle cx="455" cy="345" r="176" fill="#7A1260"/><circle cx="600" cy="345" r="176" fill="#7A1260"/><circle cx="705" cy="455" r="156" fill="#7A1260"/><circle cx="645" cy="575" r="161" fill="#7A1260"/><circle cx="415" cy="580" r="161" fill="#7A1260"/><circle cx="530" cy="500" r="206" fill="#7A1260"/>
+      <circle cx="330" cy="440" r="150" fill="url(#brain)"/><circle cx="455" cy="345" r="160" fill="url(#brain)"/><circle cx="600" cy="345" r="160" fill="url(#brain)"/><circle cx="705" cy="455" r="140" fill="url(#brain)"/><circle cx="645" cy="575" r="145" fill="url(#brain)"/><circle cx="415" cy="580" r="145" fill="url(#brain)"/><circle cx="530" cy="500" r="190" fill="url(#brain)"/>
+      <!-- glossy highlight -->
+      <ellipse cx="430" cy="300" rx="120" ry="55" fill="#FFFFFF" opacity="0.28" transform="rotate(-18 430 300)"/>
+      <!-- squiggles -->
+      <g fill="none" stroke="#C42C93" stroke-width="16" stroke-linecap="round">
+        <path d="M 527 210 C 500 260, 560 300, 527 350"/>
+        <path d="M 300 380 C 340 350, 360 410, 395 380"/>
+        <path d="M 660 300 C 700 330, 650 370, 700 395"/>
+        <path d="M 250 500 C 280 470, 300 520, 330 495"/>
+        <path d="M 760 520 C 730 540, 770 575, 735 600"/>
+      </g>
+      <!-- googly eyes, looking in different directions -->
+      <circle cx="438" cy="470" r="92" fill="#FFFFFF" stroke="#2A0E3F" stroke-width="12"/>
+      <circle cx="472" cy="505" r="40" fill="#160A2E"/>
+      <circle cx="486" cy="490" r="12" fill="#FFFFFF"/>
+      <circle cx="618" cy="455" r="102" fill="#FFFFFF" stroke="#2A0E3F" stroke-width="12"/>
+      <circle cx="580" cy="415" r="44" fill="#160A2E"/>
+      <circle cx="595" cy="400" r="13" fill="#FFFFFF"/>
+      <!-- goofy grin + tongue -->
+      <path d="M 430 615 Q 530 690 640 600" fill="none" stroke="#2A0E3F" stroke-width="16" stroke-linecap="round"/>
+      <path d="M 520 650 Q 520 760 575 760 Q 630 760 618 640 Q 570 668 520 650 Z" fill="#FF3D6E" stroke="#2A0E3F" stroke-width="12" stroke-linejoin="round"/>
+      <path d="M 572 668 L 574 735" stroke="#B0103F" stroke-width="10" stroke-linecap="round"/>
+    </g></g><path d="M 215 184 Q 215 230 261 230 Q 215 230 215 276 Q 215 230 169 230 Q 215 230 215 184 Z" fill="#FFD84D"/><path d="M 820 216 Q 820 250 854 250 Q 820 250 820 284 Q 820 250 786 250 Q 820 250 820 216 Z" fill="#2EE6FF"/><path d="M 830 740 Q 830 780 870 780 Q 830 780 830 820 Q 830 780 790 780 Q 830 780 830 740 Z" fill="#FFD84D"/><path d="M 200 762 Q 200 790 228 790 Q 200 790 200 818 Q 200 790 172 790 Q 200 790 200 762 Z" fill="#B6FF3B"/></svg>

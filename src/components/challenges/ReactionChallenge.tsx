@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { REACTION_TIMEOUT_MS, scoreReaction } from '../../engine/stupid';
 import { useT } from '../../i18n';
+import { playSfx } from '../../services/sound';
 import { colors, glow, gradients, radius, spacing } from '../../theme';
 
 interface Props {
@@ -44,6 +45,7 @@ export function ReactionChallenge({ waitMs, onDone }: Props) {
     const goTimer = setTimeout(() => {
       goAt.current = Date.now();
       setGreen(true);
+      playSfx('ding');
     }, waitMs);
     // Never tapping at all is the slowest possible reaction.
     const giveUp = setTimeout(() => {

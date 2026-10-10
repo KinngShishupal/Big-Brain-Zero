@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { mmkvStorage } from './storage';
 
 /** Bump when the persisted shape changes and add a step to `migrateSave`. */
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 export const SAVE_KEY = 'big-brain-zero-save';
 
 export type Language = 'en' | 'hi';
@@ -11,6 +11,8 @@ export type Language = 'en' | 'hi';
 export interface Settings {
   haptics: boolean;
   language: Language;
+  sound: boolean;
+  music: boolean;
 }
 
 export interface SaveData {
@@ -23,8 +25,11 @@ export interface SaveData {
 
 export interface SaveActions {
   recordRun: (iq: number) => boolean;
+  improveBest: (iq: number) => boolean;
   setHaptics: (enabled: boolean) => void;
   setLanguage: (language: Language) => void;
+  setSound: (enabled: boolean) => void;
+  setMusic: (enabled: boolean) => void;
   resetProgress: () => void;
 }
 
@@ -35,7 +40,7 @@ export function createInitialSave(): SaveData {
     saveVersion: SAVE_VERSION,
     bestIq: null,
     gamesPlayed: 0,
-    settings: { haptics: true, language: 'en' },
+    settings: { haptics: true, language: 'en', sound: true, music: true },
   };
 }
 
@@ -55,11 +60,25 @@ export const useSaveStore = create<SaveState>()(
         return isBest;
       },
 
+      /** Updates the best IQ for a run already recorded (e.g. after a rewarded bonus). */
+      improveBest: iq => {
+        const { bestIq } = get();
+        if (bestIq !== null && iq >= bestIq) {
+          return false;
+        }
+        set({ bestIq: iq });
+        return true;
+      },
+
       setHaptics: haptics =>
         set(s => ({ settings: { ...s.settings, haptics } })),
 
       setLanguage: language =>
         set(s => ({ settings: { ...s.settings, language } })),
+
+      setSound: sound => set(s => ({ settings: { ...s.settings, sound } })),
+
+      setMusic: music => set(s => ({ settings: { ...s.settings, music } })),
 
       resetProgress: () => set({ bestIq: null, gamesPlayed: 0 }),
     }),
@@ -74,6 +93,15 @@ export const useSaveStore = create<SaveState>()(
         settings: s.settings,
       }),
       migrate: (persisted, version) => migrateSave(persisted, version),
+      // Deep-merge settings so newly added toggles get their defaults.
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<SaveData>;
+        return {
+          ...current,
+          ...p,
+          settings: { ...current.settings, ...(p.settings ?? {}) },
+        };
+      },
     },
   ),
 );
@@ -84,7 +112,13 @@ export function migrateSave(persisted: unknown, version: number): SaveData {
   if (!persisted || typeof persisted !== 'object') {
     return base;
   }
-  let data: SaveData = { ...base, ...(persisted as Partial<SaveData>) };
+  const old = persisted as Partial<SaveData>;
+  // v1 → v2: added settings.sound and settings.music (default on).
+  let data: SaveData = {
+    ...base,
+    ...old,
+    settings: { ...base.settings, ...(old.settings ?? {}) },
+  };
   if (version < SAVE_VERSION) {
     data = { ...data, saveVersion: SAVE_VERSION };
   }

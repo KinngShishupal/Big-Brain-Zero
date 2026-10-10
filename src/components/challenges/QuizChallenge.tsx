@@ -5,6 +5,7 @@ import type { Question } from '../../data/questions';
 import { scoreQuiz } from '../../engine/stupid';
 import { useT } from '../../i18n';
 import { haptic } from '../../services/haptics';
+import { playSfx } from '../../services/sound';
 import { useSaveStore } from '../../store/saveStore';
 import { colors, glow, gradients, radius, spacing } from '../../theme';
 import { GlassCard } from '../GlassCard';
@@ -39,6 +40,7 @@ export function QuizChallenge({ question, order, onDone }: Props) {
       return;
     }
     haptic('tap');
+    playSfx('select');
     setPicked(answerIndex);
     // Let the selection glow for a beat before revealing the verdict.
     timer.current = setTimeout(

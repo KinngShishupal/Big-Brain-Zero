@@ -146,3 +146,20 @@ export function verdictFor(points: number): Verdict {
   }
   return 'peak';
 }
+
+/** Being smart (scoring 0) ends the run — unless the player watches a video to retry. */
+export function isGameOver(points: number): boolean {
+  return points <= 0;
+}
+
+/** How many funny game-over roasts exist (keys gameOver.title1…N / body1…N). */
+export const GAME_OVER_QUIPS = 6;
+
+/** Picks a roast number in 1…GAME_OVER_QUIPS, never the same as the previous one. */
+export function pickQuip(previous: number, rng: () => number): number {
+  const options = Array.from(
+    { length: GAME_OVER_QUIPS },
+    (_, i) => i + 1,
+  ).filter(n => n !== previous);
+  return options[Math.floor(rng() * options.length)];
+}

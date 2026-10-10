@@ -2,6 +2,9 @@ import { QUESTIONS } from '../src/data/questions';
 import {
   buildRun,
   iqFor,
+  GAME_OVER_QUIPS,
+  isGameOver,
+  pickQuip,
   makeRng,
   maxScore,
   rankFor,
@@ -124,5 +127,38 @@ describe('IQ and ranks', () => {
     expect(verdictFor(30)).toBe('meh');
     expect(verdictFor(75)).toBe('dumb');
     expect(verdictFor(100)).toBe('peak');
+  });
+});
+
+describe('isGameOver', () => {
+  it('ends the run only on a smart (0-point) result', () => {
+    expect(isGameOver(0)).toBe(true);
+    expect(isGameOver(5)).toBe(false);
+    expect(isGameOver(100)).toBe(false);
+  });
+});
+
+describe('pickQuip', () => {
+  it('stays in range and never repeats the previous roast', () => {
+    const rng = makeRng(99);
+    let prev = 0;
+    for (let i = 0; i < 200; i++) {
+      const q = pickQuip(prev, rng);
+      expect(q).toBeGreaterThanOrEqual(1);
+      expect(q).toBeLessThanOrEqual(GAME_OVER_QUIPS);
+      expect(q).not.toBe(prev);
+      prev = q;
+    }
+  });
+
+  it('has an English and Hindi line for every roast', () => {
+    const { en } = require('../src/i18n/en');
+    const { hi } = require('../src/i18n/hi');
+    for (let n = 1; n <= GAME_OVER_QUIPS; n++) {
+      for (const dict of [en, hi]) {
+        expect(dict[`gameOver.title${n}`]).toBeTruthy();
+        expect(dict[`gameOver.body${n}`]).toBeTruthy();
+      }
+    }
   });
 });
