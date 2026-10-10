@@ -27,6 +27,8 @@ import {
   makeRng,
   pickLine,
   pickQuip,
+  CONTINUE_LABELS,
+  END_LABELS,
   VERDICT_LINES,
   maxScore,
   verdictFor,
@@ -143,6 +145,9 @@ export function PlayScreen({ navigation }: Props) {
   const [quip, setQuip] = useState(1);
   /** Which funny line to show for a scored verdict (1…VERDICT_LINES). */
   const [verdictLine, setVerdictLine] = useState(1);
+  /** Rotating funny labels for the Next and End game buttons. */
+  const [continueLabel, setContinueLabel] = useState(1);
+  const [endLabel, setEndLabel] = useState(1);
 
   const progress = useSharedValue(0);
   useEffect(() => {
@@ -171,8 +176,10 @@ export function PlayScreen({ navigation }: Props) {
       playSfx('whoosh', 0.5);
       if (isGameOver(points)) {
         setQuip(prev => pickQuip(prev, Math.random));
+        setEndLabel(prev => pickLine(prev, Math.random, END_LABELS));
       } else {
         setVerdictLine(prev => pickLine(prev, Math.random, VERDICT_LINES));
+        setContinueLabel(prev => pickLine(prev, Math.random, CONTINUE_LABELS));
       }
       setTotal(prev => prev + points);
       setLastPoints(points);
@@ -335,7 +342,7 @@ export function PlayScreen({ navigation }: Props) {
                     style={styles.full}
                   />
                   <Button
-                    label={t('gameOver.end')}
+                    label={t(`gameOver.end${endLabel}` as TranslationKey)}
                     variant="glass"
                     onPress={endGame}
                     style={styles.full}
@@ -356,7 +363,9 @@ export function PlayScreen({ navigation }: Props) {
                     {t(`verdict.${verdict!}${verdictLine}` as TranslationKey)}
                   </Text>
                   <Button
-                    label={t('verdict.continue')}
+                    label={t(
+                      `verdict.continue${continueLabel}` as TranslationKey,
+                    )}
                     icon="👉"
                     variant={vs.button}
                     onPress={next}

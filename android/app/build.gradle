@@ -97,6 +97,14 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    externalNativeBuild {
+        cmake {
+            // Shorter native build folder (project-root .cxx instead of android/app/.cxx).
+            // On Windows, codegen object paths embed the project path; this keeps release
+            // builds under the 260-character path limit. Keep the project folder path short.
+            buildStagingDirectory rootProject.file('../.cxx')
+        }
+    }
     signingConfigs {
         debug {
             storeFile file('debug.keystore')

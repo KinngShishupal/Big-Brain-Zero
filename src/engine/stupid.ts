@@ -167,10 +167,14 @@ export function isGameOver(points: number): boolean {
 }
 
 /** How many funny game-over roasts exist (keys gameOver.title1…N / body1…N). */
-export const GAME_OVER_QUIPS = 6;
+export const GAME_OVER_QUIPS = 12;
 
 /** How many funny lines exist per verdict (keys verdict.meh1…N, dumb1…N, peak1…N). */
-export const VERDICT_LINES = 4;
+export const VERDICT_LINES = 8;
+
+/** Rotating labels for the "next" and "end game" buttons (verdict.continue1…N, gameOver.end1…N). */
+export const CONTINUE_LABELS = 6;
+export const END_LABELS = 4;
 
 /** Picks a line number in 1…count, never the same as the previous one. */
 export function pickLine(

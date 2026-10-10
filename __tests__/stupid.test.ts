@@ -7,6 +7,8 @@ import {
   isGameOver,
   pickLine,
   pickQuip,
+  CONTINUE_LABELS,
+  END_LABELS,
   VERDICT_LINES,
   makeRng,
   maxScore,
@@ -233,5 +235,20 @@ describe('question pool', () => {
         .sort()
         .join(',');
     expect(ids(1)).not.toBe(ids(2));
+  });
+});
+
+describe('button labels', () => {
+  it('has every Next and End game label in English and Hindi', () => {
+    const { en } = require('../src/i18n/en');
+    const { hi } = require('../src/i18n/hi');
+    for (const dict of [en, hi]) {
+      for (let n = 1; n <= CONTINUE_LABELS; n++) {
+        expect(dict[`verdict.continue${n}`]).toBeTruthy();
+      }
+      for (let n = 1; n <= END_LABELS; n++) {
+        expect(dict[`gameOver.end${n}`]).toBeTruthy();
+      }
+    }
   });
 });
