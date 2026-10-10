@@ -16,6 +16,7 @@ import {
 } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { envWithGitTools } from './git-tools-env.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ANDROID = join(ROOT, 'android');
@@ -132,7 +133,7 @@ const gradleArgs = [
 const spawnOptions = {
   cwd: buildAndroid,
   stdio: 'inherit',
-  env: { ...process.env, PROJECT_REAL_ROOT: ROOT },
+  env: { ...envWithGitTools(), PROJECT_REAL_ROOT: ROOT },
 };
 // Windows needs a shell to run the .bat; pass one command string (no separate args).
 const run =

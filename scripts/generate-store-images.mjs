@@ -23,15 +23,41 @@ const H = 1920;
 const CROP = { left: 0, top: 125, width: 1220, height: 2520 };
 
 const SHOTS = [
-  { file: 'home.png', title: 'Lowest IQ wins', sub: 'The dumber you are, the more you win.' },
-  { file: 'quiz.png', title: 'Wrong answers score', sub: 'Absurd answers score the most.' },
-  { file: 'sheet1.png', title: 'Be gloriously dumb', sub: 'Earn stupidity points for every bad idea.', hideBanner: true },
-  { file: 'button.png', title: 'Break the rules', sub: 'Then press the button anyway.' },
-  { file: 'count.png', title: 'Count badly', sub: 'The further off, the better.' },
-  { file: 'c06.png', title: 'Measure your IQ', sub: 'Watch the meter drop as you get dumber.' },
+  {
+    file: 'home.png',
+    title: 'Lowest IQ wins',
+    sub: 'The dumber you are, the more you win.',
+  },
+  {
+    file: 'quiz.png',
+    title: 'Wrong answers score',
+    sub: 'Absurd answers score the most.',
+  },
+  {
+    file: 'sheet1.png',
+    title: 'Be gloriously dumb',
+    sub: 'Earn stupidity points for every bad idea.',
+    hideBanner: true,
+  },
+  {
+    file: 'button.png',
+    title: 'Break the rules',
+    sub: 'Then press the button anyway.',
+  },
+  {
+    file: 'count.png',
+    title: 'Count badly',
+    sub: 'The further off, the better.',
+  },
+  {
+    file: 'c06.png',
+    title: 'Measure your IQ',
+    sub: 'Watch the meter drop as you get dumber.',
+  },
 ];
 
-const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const esc = s =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 const background = (w, h) =>
   Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
@@ -57,14 +83,20 @@ const background = (w, h) =>
 
 const caption = (title, sub) =>
   Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="330">
-  <text x="${W / 2}" y="150" text-anchor="middle" font-family="Arial Black, Arial, sans-serif"
+  <text x="${
+    W / 2
+  }" y="150" text-anchor="middle" font-family="Arial Black, Arial, sans-serif"
         font-weight="900" font-size="84" fill="#FFFFFF">${esc(title)}</text>
-  <text x="${W / 2}" y="235" text-anchor="middle" font-family="Arial, sans-serif"
+  <text x="${
+    W / 2
+  }" y="235" text-anchor="middle" font-family="Arial, sans-serif"
         font-weight="700" font-size="42" fill="#2EE6FF">${esc(sub)}</text>
 </svg>`);
 
 const roundedMask = (w, h, r) =>
-  Buffer.from(`<svg width="${w}" height="${h}"><rect width="${w}" height="${h}" rx="${r}" fill="#fff"/></svg>`);
+  Buffer.from(
+    `<svg width="${w}" height="${h}"><rect width="${w}" height="${h}" rx="${r}" fill="#fff"/></svg>`,
+  );
 
 async function phoneShot(shot, i) {
   let img = sharp(join(RAW, shot.file)).extract(CROP);
@@ -93,8 +125,12 @@ async function phoneShot(shot, i) {
     .toBuffer();
 
   const border = 10;
-  const bezel = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${frameW + border * 2}" height="${frameH + border * 2}">
-    <rect x="0" y="0" width="${frameW + border * 2}" height="${frameH + border * 2}" rx="${48 + border}"
+  const bezel = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${
+    frameW + border * 2
+  }" height="${frameH + border * 2}">
+    <rect x="0" y="0" width="${frameW + border * 2}" height="${
+    frameH + border * 2
+  }" rx="${48 + border}"
           fill="#0B061C" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
   </svg>`);
 
@@ -115,8 +151,12 @@ async function phoneShot(shot, i) {
 async function featureGraphic() {
   const fw = 1024;
   const fh = 500;
-  const logo = await sharp(join(ROOT, 'src', 'assets', 'logo@3x.png')).resize(300, 300).png().toBuffer();
-  const text = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${fw}" height="${fh}">
+  const logo = await sharp(join(ROOT, 'src', 'assets', 'logo@3x.png'))
+    .resize(300, 300)
+    .png()
+    .toBuffer();
+  const text =
+    Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${fw}" height="${fh}">
     <text x="380" y="235" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="66" fill="#FFFFFF">Call Me Dumb</text>
     <text x="384" y="300" font-family="Arial, sans-serif" font-weight="700" font-size="34" fill="#2EE6FF">The dumber you are,</text>
     <text x="384" y="345" font-family="Arial, sans-serif" font-weight="700" font-size="34" fill="#2EE6FF">the more you win.</text>

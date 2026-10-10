@@ -25,7 +25,11 @@ const ALIAS = 'upload';
 
 function ask(question, { hidden = false } = {}) {
   return new Promise(resolve => {
-    const rl = createInterface({ input: process.stdin, output: process.stdout, terminal: true });
+    const rl = createInterface({
+      input: process.stdin,
+      output: process.stdout,
+      terminal: true,
+    });
     if (hidden) {
       // Hide typed characters (passwords).
       rl._writeToOutput = s => {
@@ -52,19 +56,28 @@ if (existsSync(STORE_PATH) || existsSync(PROPS_PATH)) {
   process.exit(1);
 }
 
-const keytool = spawnSync('keytool', ['-help'], { stdio: 'ignore', shell: true });
+const keytool = spawnSync('keytool', ['-help'], {
+  stdio: 'ignore',
+  shell: true,
+});
 if (keytool.status !== 0 && keytool.status !== 1) {
-  console.error('keytool not found. Install JDK 17 and make sure its bin folder is on PATH.');
+  console.error(
+    'keytool not found. Install JDK 17 and make sure its bin folder is on PATH.',
+  );
   process.exit(1);
 }
 
 console.log('Create your Google Play upload key.\n');
 const name = (await ask('Your name (shown in the certificate): ')) || 'Unknown';
-const country = ((await ask('Two-letter country code [IN]: ')) || 'IN').toUpperCase();
+const country = (
+  (await ask('Two-letter country code [IN]: ')) || 'IN'
+).toUpperCase();
 
 let password = '';
 while (password.length < 8) {
-  password = await ask('Keystore password (min 8 characters): ', { hidden: true });
+  password = await ask('Keystore password (min 8 characters): ', {
+    hidden: true,
+  });
   if (password.length < 8) {
     console.log('Too short, try again.');
     continue;
@@ -81,15 +94,24 @@ const result = spawnSync(
   [
     '-genkeypair',
     '-v',
-    '-storetype', 'PKCS12',
-    '-keystore', STORE_PATH,
-    '-alias', ALIAS,
-    '-keyalg', 'RSA',
-    '-keysize', '2048',
-    '-validity', '10000',
-    '-dname', `CN=${name}, C=${country}`,
-    '-storepass', password,
-    '-keypass', password,
+    '-storetype',
+    'PKCS12',
+    '-keystore',
+    STORE_PATH,
+    '-alias',
+    ALIAS,
+    '-keyalg',
+    'RSA',
+    '-keysize',
+    '2048',
+    '-validity',
+    '10000',
+    '-dname',
+    `CN=${name}, C=${country}`,
+    '-storepass',
+    password,
+    '-keypass',
+    password,
   ],
   { stdio: 'inherit' },
 );
@@ -112,4 +134,6 @@ writeFileSync(
 
 console.log(`\n✅ Created ${STORE_PATH}`);
 console.log(`✅ Created ${PROPS_PATH}`);
-console.log('\nBack up BOTH files now. Then build with `npm run build:aab` (Play) or `npm run build:apk`.');
+console.log(
+  '\nBack up BOTH files now. Then build with `npm run build:aab` (Play) or `npm run build:apk`.',
+);

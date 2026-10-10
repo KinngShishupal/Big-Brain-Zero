@@ -24,14 +24,20 @@ const BRAIN_LOBES = [
 ];
 
 function sparkle(x, y, r, color) {
-  const p = `M ${x} ${y - r} Q ${x} ${y} ${x + r} ${y} Q ${x} ${y} ${x} ${y + r} Q ${x} ${y} ${x - r} ${y} Q ${x} ${y} ${x} ${y - r} Z`;
+  const p = `M ${x} ${y - r} Q ${x} ${y} ${x + r} ${y} Q ${x} ${y} ${x} ${
+    y + r
+  } Q ${x} ${y} ${x - r} ${y} Q ${x} ${y} ${x} ${y - r} Z`;
   return `<path d="${p}" fill="${color}"/>`;
 }
 
 /** The derpy brain mascot, drawn on a 1024 canvas centred around (512, 500). */
 function mascot() {
-  const outline = BRAIN_LOBES.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r + 16}" fill="#7A1260"/>`).join('');
-  const fill = BRAIN_LOBES.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="url(#brain)"/>`).join('');
+  const outline = BRAIN_LOBES.map(
+    ([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r + 16}" fill="#7A1260"/>`,
+  ).join('');
+  const fill = BRAIN_LOBES.map(
+    ([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="url(#brain)"/>`,
+  ).join('');
   return `
     <g>
       ${outline}
@@ -108,15 +114,21 @@ const fullIconSvg = (scale = 1.15) =>
 const mask = (shape, size) =>
   Buffer.from(
     shape === 'circle'
-      ? `<svg width="${size}" height="${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="#fff"/></svg>`
-      : `<svg width="${size}" height="${size}"><rect width="${size}" height="${size}" rx="${size * 0.22}" fill="#fff"/></svg>`,
+      ? `<svg width="${size}" height="${size}"><circle cx="${size / 2}" cy="${
+          size / 2
+        }" r="${size / 2}" fill="#fff"/></svg>`
+      : `<svg width="${size}" height="${size}"><rect width="${size}" height="${size}" rx="${
+          size * 0.22
+        }" fill="#fff"/></svg>`,
   );
 
 async function render(svgText, size, file, maskShape) {
   mkdirSync(dirname(file), { recursive: true });
   let img = sharp(Buffer.from(svgText), { density: 300 }).resize(size, size);
   if (maskShape) {
-    img = sharp(await img.png().toBuffer()).composite([{ input: mask(maskShape, size), blend: 'dest-in' }]);
+    img = sharp(await img.png().toBuffer()).composite([
+      { input: mask(maskShape, size), blend: 'dest-in' },
+    ]);
   }
   await img.png({ compressionLevel: 9 }).toFile(file);
   console.log(`  ${file.replace(ROOT, '.')}  ${size}px`);
@@ -129,10 +141,19 @@ for (const [d, m] of Object.entries(DENSITIES)) {
   const dir = join(RES, `mipmap-${d}`);
   // Legacy icons (Android < 8): full artwork with rounded / circular masks.
   await render(fullIconSvg(), 48 * m, join(dir, 'ic_launcher.png'), 'rounded');
-  await render(fullIconSvg(), 48 * m, join(dir, 'ic_launcher_round.png'), 'circle');
+  await render(
+    fullIconSvg(),
+    48 * m,
+    join(dir, 'ic_launcher_round.png'),
+    'circle',
+  );
   // Adaptive icon layers (Android 8+): 108dp canvas, launcher masks the shape.
   await render(backgroundSvg, 108 * m, join(dir, 'ic_launcher_background.png'));
-  await render(foregroundSvg(1, true), 108 * m, join(dir, 'ic_launcher_foreground.png'));
+  await render(
+    foregroundSvg(1, true),
+    108 * m,
+    join(dir, 'ic_launcher_foreground.png'),
+  );
 }
 
 const adaptive = `<?xml version="1.0" encoding="utf-8"?>
@@ -143,20 +164,40 @@ const adaptive = `<?xml version="1.0" encoding="utf-8"?>
 `;
 mkdirSync(join(RES, 'mipmap-anydpi-v26'), { recursive: true });
 writeFileSync(join(RES, 'mipmap-anydpi-v26', 'ic_launcher.xml'), adaptive);
-writeFileSync(join(RES, 'mipmap-anydpi-v26', 'ic_launcher_round.xml'), adaptive);
+writeFileSync(
+  join(RES, 'mipmap-anydpi-v26', 'ic_launcher_round.xml'),
+  adaptive,
+);
 console.log('  adaptive icon XML written');
 
 // Play Store listing icon.
-await render(fullIconSvg(), 512, join(ROOT, 'store', 'play-store-icon-512.png'));
+await render(
+  fullIconSvg(),
+  512,
+  join(ROOT, 'store', 'play-store-icon-512.png'),
+);
 
 // iOS: single 1024px universal app icon (Xcode 14+).
-const iosSet = join(ROOT, 'ios', 'FarmToEmpire', 'Images.xcassets', 'AppIcon.appiconset');
+const iosSet = join(
+  ROOT,
+  'ios',
+  'FarmToEmpire',
+  'Images.xcassets',
+  'AppIcon.appiconset',
+);
 await render(fullIconSvg(), 1024, join(iosSet, 'AppIcon-1024.png'));
 writeFileSync(
   join(iosSet, 'Contents.json'),
   JSON.stringify(
     {
-      images: [{ filename: 'AppIcon-1024.png', idiom: 'universal', platform: 'ios', size: '1024x1024' }],
+      images: [
+        {
+          filename: 'AppIcon-1024.png',
+          idiom: 'universal',
+          platform: 'ios',
+          size: '1024x1024',
+        },
+      ],
       info: { author: 'xcode', version: 1 },
     },
     null,

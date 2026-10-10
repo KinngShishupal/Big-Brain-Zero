@@ -12,7 +12,13 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const RATE = 22050;
-const OUT = join(dirname(fileURLToPath(import.meta.url)), '..', 'src', 'assets', 'sounds');
+const OUT = join(
+  dirname(fileURLToPath(import.meta.url)),
+  '..',
+  'src',
+  'assets',
+  'sounds',
+);
 
 // ── primitives ──────────────────────────────────────────────────────────────
 const midiToHz = m => 440 * Math.pow(2, (m - 69) / 12);
@@ -44,7 +50,19 @@ function adsr(t, len, a = 0.005, d = 0.05, s = 0.7, r = 0.05) {
 /**
  * Adds a tone. `freq` may be a number or a function of time (for slides).
  */
-function tone(buf, { start, len, freq, wave = 'square', vol = 0.3, duty = 0.5, env = {}, vibrato = 0 }) {
+function tone(
+  buf,
+  {
+    start,
+    len,
+    freq,
+    wave = 'square',
+    vol = 0.3,
+    duty = 0.5,
+    env = {},
+    vibrato = 0,
+  },
+) {
   const s0 = Math.floor(start * RATE);
   const n = Math.floor(len * RATE);
   let phase = 0;
@@ -117,7 +135,12 @@ function writeWav(name, buf) {
   header.write('data', 36);
   header.writeUInt32LE(data.length, 40);
   writeFileSync(join(OUT, `${name}.wav`), Buffer.concat([header, data]));
-  console.log(`  ${name}.wav  ${(buf.length / RATE).toFixed(2)}s  ${((44 + data.length) / 1024).toFixed(0)} KB`);
+  console.log(
+    `  ${name}.wav  ${(buf.length / RATE).toFixed(2)}s  ${(
+      (44 + data.length) /
+      1024
+    ).toFixed(0)} KB`,
+  );
 }
 
 // ── music: bouncy, goofy chiptune loop ──────────────────────────────────────
@@ -161,10 +184,28 @@ function music() {
     // Drums: kick on 1 & 3, snare on 2 & 4, hats on eighths.
     kick(buf, t0);
     kick(buf, t0 + 2 * beat);
-    noiseBurst(buf, { start: t0 + beat, len: 0.15, vol: 0.35, decay: 22, lowpass: 0.7 });
-    noiseBurst(buf, { start: t0 + 3 * beat, len: 0.15, vol: 0.35, decay: 22, lowpass: 0.7 });
+    noiseBurst(buf, {
+      start: t0 + beat,
+      len: 0.15,
+      vol: 0.35,
+      decay: 22,
+      lowpass: 0.7,
+    });
+    noiseBurst(buf, {
+      start: t0 + 3 * beat,
+      len: 0.15,
+      vol: 0.35,
+      decay: 22,
+      lowpass: 0.7,
+    });
     for (let e = 0; e < 8; e++) {
-      noiseBurst(buf, { start: t0 + e * beat * 0.5, len: 0.04, vol: 0.08, decay: 90, lowpass: 1 });
+      noiseBurst(buf, {
+        start: t0 + e * beat * 0.5,
+        len: 0.04,
+        vol: 0.08,
+        decay: 90,
+        lowpass: 1,
+      });
     }
   });
 
@@ -172,21 +213,58 @@ function music() {
   const C5 = 72;
   const melody = [
     // bar 1 (C)
-    [0, 0.5, C5], [0.5, 0.5, C5 + 4], [1, 0.5, C5 + 7], [1.5, 0.5, C5 + 4], [2, 1, C5 + 12], [3, 0.5, C5 + 7],
+    [0, 0.5, C5],
+    [0.5, 0.5, C5 + 4],
+    [1, 0.5, C5 + 7],
+    [1.5, 0.5, C5 + 4],
+    [2, 1, C5 + 12],
+    [3, 0.5, C5 + 7],
     // bar 2 (G)
-    [4, 0.5, C5 + 2], [4.5, 0.5, C5 + 7], [5, 0.5, C5 + 11], [5.5, 0.5, C5 + 7], [6, 1.5, C5 + 2],
+    [4, 0.5, C5 + 2],
+    [4.5, 0.5, C5 + 7],
+    [5, 0.5, C5 + 11],
+    [5.5, 0.5, C5 + 7],
+    [6, 1.5, C5 + 2],
     // bar 3 (Am)
-    [8, 0.5, C5], [8.5, 0.5, C5 + 3], [9, 0.5, C5 + 4], [9.5, 0.5, C5 + 9], [10, 1, C5 + 7], [11, 0.5, C5 + 4],
+    [8, 0.5, C5],
+    [8.5, 0.5, C5 + 3],
+    [9, 0.5, C5 + 4],
+    [9.5, 0.5, C5 + 9],
+    [10, 1, C5 + 7],
+    [11, 0.5, C5 + 4],
     // bar 4 (F)
-    [12, 0.5, C5 + 5], [12.5, 0.5, C5 + 4], [13, 0.5, C5 + 2], [13.5, 0.5, C5], [14, 1.5, C5 + 5],
+    [12, 0.5, C5 + 5],
+    [12.5, 0.5, C5 + 4],
+    [13, 0.5, C5 + 2],
+    [13.5, 0.5, C5],
+    [14, 1.5, C5 + 5],
     // bar 5 (C)
-    [16, 0.25, C5 + 12], [16.25, 0.25, C5 + 12], [16.5, 0.5, C5 + 7], [17, 0.5, C5 + 4], [17.5, 0.5, C5 + 7], [18, 1, C5 + 9], [19, 0.5, C5 + 7],
+    [16, 0.25, C5 + 12],
+    [16.25, 0.25, C5 + 12],
+    [16.5, 0.5, C5 + 7],
+    [17, 0.5, C5 + 4],
+    [17.5, 0.5, C5 + 7],
+    [18, 1, C5 + 9],
+    [19, 0.5, C5 + 7],
     // bar 6 (G)
-    [20, 0.5, C5 + 11], [20.5, 0.5, C5 + 14], [21, 0.5, C5 + 11], [21.5, 0.5, C5 + 7], [22, 1.5, C5 + 2],
+    [20, 0.5, C5 + 11],
+    [20.5, 0.5, C5 + 14],
+    [21, 0.5, C5 + 11],
+    [21.5, 0.5, C5 + 7],
+    [22, 1.5, C5 + 2],
     // bar 7 (F)
-    [24, 0.5, C5 + 9], [24.5, 0.5, C5 + 5], [25, 0.5, C5], [25.5, 0.5, C5 + 5], [26, 1, C5 + 9], [27, 0.5, C5 + 12],
+    [24, 0.5, C5 + 9],
+    [24.5, 0.5, C5 + 5],
+    [25, 0.5, C5],
+    [25.5, 0.5, C5 + 5],
+    [26, 1, C5 + 9],
+    [27, 0.5, C5 + 12],
     // bar 8 (G) — wobbly "duh-duh-duuuh" turnaround
-    [28, 0.5, C5 + 7], [28.5, 0.5, C5 + 6], [29, 0.5, C5 + 5], [29.5, 0.5, C5 + 4], [30, 1.25, C5 + 2],
+    [28, 0.5, C5 + 7],
+    [28.5, 0.5, C5 + 6],
+    [29, 0.5, C5 + 5],
+    [29.5, 0.5, C5 + 4],
+    [30, 1.25, C5 + 2],
   ];
   melody.forEach(([b, l, m]) =>
     tone(buf, {
@@ -206,14 +284,36 @@ function music() {
 // ── sound effects ──────────────────────────────────────────────────────────
 function tap() {
   const b = buffer(0.06);
-  tone(b, { start: 0, len: 0.05, freq: 1250, wave: 'square', duty: 0.25, vol: 0.4, env: { a: 0.001, d: 0.03, s: 0.2, r: 0.015 } });
+  tone(b, {
+    start: 0,
+    len: 0.05,
+    freq: 1250,
+    wave: 'square',
+    duty: 0.25,
+    vol: 0.4,
+    env: { a: 0.001, d: 0.03, s: 0.2, r: 0.015 },
+  });
   return finish(b, 0.5);
 }
 
 function select() {
   const b = buffer(0.14);
-  tone(b, { start: 0, len: 0.06, freq: midiToHz(76), wave: 'square', duty: 0.25, vol: 0.4 });
-  tone(b, { start: 0.06, len: 0.07, freq: midiToHz(83), wave: 'square', duty: 0.25, vol: 0.4 });
+  tone(b, {
+    start: 0,
+    len: 0.06,
+    freq: midiToHz(76),
+    wave: 'square',
+    duty: 0.25,
+    vol: 0.4,
+  });
+  tone(b, {
+    start: 0.06,
+    len: 0.07,
+    freq: midiToHz(83),
+    wave: 'square',
+    duty: 0.25,
+    vol: 0.4,
+  });
   return finish(b, 0.55);
 }
 
@@ -225,7 +325,10 @@ function bonk() {
     len: 0.33,
     wave: 'sine',
     vol: 0.7,
-    freq: t => 420 * Math.exp(-5 * t) + 110 + 40 * Math.sin(2 * Math.PI * 22 * t) * Math.exp(-6 * t),
+    freq: t =>
+      420 * Math.exp(-5 * t) +
+      110 +
+      40 * Math.sin(2 * Math.PI * 22 * t) * Math.exp(-6 * t),
     env: { a: 0.002, d: 0.1, s: 0.5, r: 0.12 },
   });
   noiseBurst(b, { start: 0, len: 0.03, vol: 0.25, decay: 120, lowpass: 0.5 });
@@ -259,7 +362,15 @@ function smart() {
 function dumb() {
   const b = buffer(0.5);
   [72, 76, 79, 84].forEach((m, i) =>
-    tone(b, { start: i * 0.08, len: 0.12, freq: midiToHz(m), wave: 'square', duty: 0.25, vol: 0.35, env: { a: 0.002, d: 0.05, s: 0.5, r: 0.05 } }),
+    tone(b, {
+      start: i * 0.08,
+      len: 0.12,
+      freq: midiToHz(m),
+      wave: 'square',
+      duty: 0.25,
+      vol: 0.35,
+      env: { a: 0.002, d: 0.05, s: 0.5, r: 0.05 },
+    }),
   );
   return finish(b, 0.7);
 }
@@ -275,11 +386,30 @@ function peak() {
     [0.92, 0.5, 81],
   ];
   fan.forEach(([s, l, m]) => {
-    tone(b, { start: s, len: l, freq: midiToHz(m), wave: 'square', duty: 0.5, vol: 0.28 });
-    tone(b, { start: s, len: l, freq: midiToHz(m - 12), wave: 'triangle', vol: 0.3 });
+    tone(b, {
+      start: s,
+      len: l,
+      freq: midiToHz(m),
+      wave: 'square',
+      duty: 0.5,
+      vol: 0.28,
+    });
+    tone(b, {
+      start: s,
+      len: l,
+      freq: midiToHz(m - 12),
+      wave: 'triangle',
+      vol: 0.3,
+    });
   });
   for (let i = 0; i < 10; i++) {
-    tone(b, { start: 0.92 + i * 0.05, len: 0.06, freq: midiToHz(96 + (i % 4) * 3), wave: 'sine', vol: 0.15 });
+    tone(b, {
+      start: 0.92 + i * 0.05,
+      len: 0.06,
+      freq: midiToHz(96 + (i % 4) * 3),
+      wave: 'sine',
+      vol: 0.15,
+    });
   }
   kick(b, 0.39, 0.5);
   return finish(b, 0.8);
@@ -301,8 +431,22 @@ function whoosh() {
 /** Bright ding for the reaction light turning green. */
 function ding() {
   const b = buffer(0.6);
-  tone(b, { start: 0, len: 0.58, freq: midiToHz(88), wave: 'sine', vol: 0.5, env: { a: 0.002, d: 0.3, s: 0.2, r: 0.25 } });
-  tone(b, { start: 0, len: 0.4, freq: midiToHz(100), wave: 'sine', vol: 0.15, env: { a: 0.002, d: 0.2, s: 0.1, r: 0.15 } });
+  tone(b, {
+    start: 0,
+    len: 0.58,
+    freq: midiToHz(88),
+    wave: 'sine',
+    vol: 0.5,
+    env: { a: 0.002, d: 0.3, s: 0.2, r: 0.25 },
+  });
+  tone(b, {
+    start: 0,
+    len: 0.4,
+    freq: midiToHz(100),
+    wave: 'sine',
+    vol: 0.15,
+    env: { a: 0.002, d: 0.2, s: 0.1, r: 0.15 },
+  });
   return finish(b, 0.65);
 }
 
@@ -310,7 +454,13 @@ function ding() {
 function drumroll() {
   const b = buffer(2.0);
   for (let t = 0; t < 1.35; t += 0.045) {
-    noiseBurst(b, { start: t, len: 0.05, vol: 0.18 + 0.25 * (t / 1.35), decay: 60, lowpass: 0.6 });
+    noiseBurst(b, {
+      start: t,
+      len: 0.05,
+      vol: 0.18 + 0.25 * (t / 1.35),
+      decay: 60,
+      lowpass: 0.6,
+    });
   }
   kick(b, 1.4, 0.7);
   noiseBurst(b, { start: 1.4, len: 0.6, vol: 0.5, decay: 5, lowpass: 0.95 });
