@@ -2,11 +2,11 @@
 
 **The dumber you are, the more you win.** A silly party game for Android, built with **React Native CLI (bare workflow, no Expo)** and TypeScript.
 
-Each run is 10 quick challenges, and every one rewards the dumbest possible play with up to 100 "stupidity points". At the end you get an IQ score, and **lower is better**.
+Each run is 14 quick challenges: 10 questions picked at random from a pool of 50 (never the same set as your previous game), plus 4 mini-games. Every challenge rewards the dumbest possible play with up to 100 "stupidity points". A correct answer ends the game unless you watch a video to retry. At the end you get an IQ score, and **lower is better**.
 
 | Challenge | How to win (by being dumb) |
 |---|---|
-| 🤔 Quiz (×6) | The correct answer scores **0**. Wrong scores 50, very wrong 75, and gloriously absurd 100 ("2 + 2 = Fish"). |
+| 🤔 Quiz (×10, from 50) | The correct answer scores **0**. Wrong scores 50, very wrong 75, and gloriously absurd 100 ("2 + 2 = Fish"). |
 | 🔴 DO NOT PRESS (×1) | Press the forbidden button as much as you can in 5 seconds: 5 points per press. |
 | 🐢 Reaction (×1) | "Tap when it turns green", and the slower the better. Tapping too early gets a consolation 60. |
 | 🐔 Count the chickens (×2) | The further off your guess, the more points: 10 per chicken of error. |

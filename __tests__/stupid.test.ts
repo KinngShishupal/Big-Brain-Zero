@@ -200,3 +200,38 @@ describe('verdict lines', () => {
     }
   });
 });
+
+describe('question pool', () => {
+  it('has at least 50 questions', () => {
+    expect(QUESTIONS.length).toBeGreaterThanOrEqual(50);
+  });
+
+  it('puts 10 random questions in every game', () => {
+    const run = buildRun(makeRng(3));
+    expect(run.filter(c => c.kind === 'quiz')).toHaveLength(10);
+  });
+
+  it('avoids the previous game’s questions when it can', () => {
+    const first = buildRun(makeRng(11));
+    const used = new Set(
+      first.flatMap(c => (c.kind === 'quiz' ? [c.question.id] : [])),
+    );
+    for (let seed = 0; seed < 20; seed++) {
+      const next = buildRun(makeRng(seed), used);
+      next.forEach(c => {
+        if (c.kind === 'quiz') {
+          expect(used.has(c.question.id)).toBe(false);
+        }
+      });
+    }
+  });
+
+  it('different games get different question sets', () => {
+    const ids = (seed: number) =>
+      buildRun(makeRng(seed))
+        .flatMap(c => (c.kind === 'quiz' ? [c.question.id] : []))
+        .sort()
+        .join(',');
+    expect(ids(1)).not.toBe(ids(2));
+  });
+});

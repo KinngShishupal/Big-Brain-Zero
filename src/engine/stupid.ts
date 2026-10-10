@@ -13,7 +13,7 @@ export type Challenge =
   | { kind: 'count'; count: number; dots: { x: number; y: number }[] };
 
 export const RUN_LAYOUT = {
-  quiz: 6,
+  quiz: 10,
   button: 1,
   reaction: 1,
   count: 2,
@@ -45,9 +45,23 @@ export function shuffle<T>(items: readonly T[], rng: () => number): T[] {
   return out;
 }
 
-/** Builds one shuffled run of challenges. */
-export function buildRun(rng: () => number): Challenge[] {
-  const quizzes: Challenge[] = shuffle(QUESTIONS, rng)
+/**
+ * Builds one shuffled run: RUN_LAYOUT.quiz random questions plus the mini-games.
+ * Questions in `avoid` (e.g. last game's) are used only if there aren't enough others.
+ */
+export function buildRun(
+  rng: () => number,
+  avoid: ReadonlySet<string> = new Set(),
+): Challenge[] {
+  const fresh = shuffle(
+    QUESTIONS.filter(q => !avoid.has(q.id)),
+    rng,
+  );
+  const recent = shuffle(
+    QUESTIONS.filter(q => avoid.has(q.id)),
+    rng,
+  );
+  const quizzes: Challenge[] = [...fresh, ...recent]
     .slice(0, RUN_LAYOUT.quiz)
     .map(question => ({
       kind: 'quiz',

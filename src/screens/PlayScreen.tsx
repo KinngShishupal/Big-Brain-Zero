@@ -120,10 +120,19 @@ function renderChallenge(c: Challenge, onDone: (points: number) => void) {
   }
 }
 
+/** Questions from the previous game this session, so the next game gets fresh ones. */
+let lastGameQuestions: ReadonlySet<string> = new Set();
+
 export function PlayScreen({ navigation }: Props) {
   const t = useT();
   const insets = useSafeAreaInsets();
-  const [run] = useState(() => buildRun(makeRng(Date.now())));
+  const [run] = useState(() => {
+    const next = buildRun(makeRng(Date.now()), lastGameQuestions);
+    lastGameQuestions = new Set(
+      next.flatMap(c => (c.kind === 'quiz' ? [c.question.id] : [])),
+    );
+    return next;
+  });
   const [index, setIndex] = useState(0);
   const [total, setTotal] = useState(0);
   const [lastPoints, setLastPoints] = useState<number | null>(null);
